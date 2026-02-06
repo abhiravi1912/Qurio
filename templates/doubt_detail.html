@@ -1,0 +1,33 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<h2>[{{ doubt.category }}] {{ doubt.title }}</h2>
+
+<p>{{ doubt.description }}</p>
+
+<hr>
+
+<h3>Answers</h3>
+
+{% for answer in answers %}
+    <div class="doubt">
+        <p>{{ answer.content }}</p>
+        <small>
+    Answered by <strong>{{ answer.user.username }}</strong>
+    on {{ answer.created_at }}
+</small>
+    </div>
+{% else %}
+    <p>No answers yet. Be the first to answer!</p>
+{% endfor %}
+
+<hr>
+
+<h3>Post Your Answer</h3>
+
+<form method="POST">
+    {{ form.hidden_tag() }}
+    <p>{{ form.content.label }}<br>{{ form.content(rows=4) }}</p>
+    <p>{{ form.submit() }}</p>
+</form>
+{% endblock %}

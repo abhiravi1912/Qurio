@@ -1,0 +1,49 @@
+{% extends "layout.html" %}
+{% set request = request %}
+
+
+{% block content %}
+<h1>Welcome to QURIO 🚀</h1>
+<form method="GET" action="/" style="margin-bottom: 20px;">
+    <input
+        type="text"
+        name="q"
+        placeholder="Search doubts..."
+        value="{{ request.args.get('q', '') }}"
+        style="padding: 8px; width: 60%;"
+    >
+    <button type="submit">Search</button>
+</form>
+
+
+<p>
+    <strong>Filter by Category:</strong>
+    <a href="/">All</a> |
+    <a href="/category/Math">Math</a> |
+    <a href="/category/Physics">Physics</a> |
+    <a href="/category/Computer Science">Computer Science</a>
+</p>
+
+<hr>
+
+<a class="btn secondary" href="/post_doubt">➕ Post a Doubt</a>
+
+<hr>
+
+{% for doubt in doubts %}
+    <div class="doubt">
+        <h3>
+    <a href="/doubt/{{ doubt.id }}">
+        [{{ doubt.category }}] {{ doubt.title }}
+    </a>
+</h3>
+
+        <p>{{ doubt.description }}</p>
+        <small>Posted on {{ doubt.created_at }}</small>
+        <p><strong>🗨️ {{ Answer.query.filter_by(doubt_id=doubt.id).count() }} Answers</strong></p>
+
+    </div>
+{% else %}
+    <p>No doubts posted yet.</p>
+{% endfor %}
+{% endblock %}
