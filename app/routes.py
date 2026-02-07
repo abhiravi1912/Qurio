@@ -5,6 +5,7 @@ from app import db
 from flask_login import login_user, logout_user, login_required, current_user
 from app.forms import LoginForm
 from flask import request
+from datetime import datetime
 
 
 
@@ -26,7 +27,13 @@ def home():
     else:
         doubts = Doubt.query.all()
 
-    return render_template("home.html", doubts=doubts, Answer=Answer)
+    return render_template(
+    "home.html",
+    doubts=doubts,
+    Answer=Answer,
+    now=datetime.utcnow()
+       )
+
 
 
 

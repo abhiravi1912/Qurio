@@ -39,7 +39,10 @@
 </h3>
 
         <p>{{ doubt.description }}</p>
-        <small>Posted on {{ doubt.created_at }}</small>
+        <small>
+    Posted {{ ((now - doubt.created_at).seconds // 3600) }} hours ago
+     </small>
+
         <p><strong>🗨️ {{ Answer.query.filter_by(doubt_id=doubt.id).count() }} Answers</strong></p>
 
     </div>

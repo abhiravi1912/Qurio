@@ -165,3 +165,19 @@ input:focus, textarea:focus, select:focus {
         font-size: 22px;
     }
 }
+
+/* ===== ACTIVE NAV LINK ===== */
+.nav-links a.active {
+    border-bottom: 2px solid #3498db;
+    padding-bottom: 4px;
+}
+
+/* ===== CARD HOVER ===== */
+.doubt {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.doubt:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 14px rgba(0, 0, 0, 0.12);
+}
