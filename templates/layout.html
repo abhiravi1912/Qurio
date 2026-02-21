@@ -23,10 +23,15 @@
     </li>
 
     {% if current_user.is_authenticated %}
-        <li style="color: white;">Hi, {{ current_user.username }}</li>
-        <li>
-            <a href="/logout">Logout</a>
-        </li>
+    <li>
+        <a href="/dashboard">Dashboard</a>
+    </li>
+    <li style="color: white;">
+        Hi, {{ current_user.username }}
+    </li>
+    <li>
+        <a href="/logout">Logout</a>
+    </li>
     {% else %}
         <li>
             <a href="/register" class="{% if request.path == '/register' %}active{% endif %}">

@@ -53,13 +53,15 @@ def register():
     return render_template("register.html", form=form)
 
 @main.route("/post_doubt", methods=["GET", "POST"])
+@login_required
 def post_doubt():
     form = DoubtForm()
     if form.validate_on_submit():
         doubt = Doubt(
-            title=form.title.data,
-            description=form.description.data,
-            category=form.category.data
+    title=form.title.data,
+    description=form.description.data,
+    category=form.category.data,
+    user_id=current_user.id
         )
         db.session.add(doubt)
         db.session.commit()
@@ -126,3 +128,15 @@ def logout():
     logout_user()
     return redirect(url_for("main.home"))
 
+
+@main.route("/dashboard")
+@login_required
+def dashboard():
+    user_doubts = current_user.doubts
+    user_answers = current_user.answers
+
+    return render_template(
+        "dashboard.html",
+        user_doubts=user_doubts,
+        user_answers=user_answers
+    )

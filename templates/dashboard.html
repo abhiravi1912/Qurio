@@ -1,0 +1,43 @@
+{% extends "layout.html" %}
+
+{% block content %}
+
+<h2>My Dashboard</h2>
+
+<p><strong>Total Doubts:</strong> {{ user_doubts|length }}</p>
+<p><strong>Total Answers:</strong> {{ user_answers|length }}</p>
+
+<hr>
+
+<h3>My Doubts</h3>
+{% for doubt in user_doubts %}
+    <div class="doubt">
+        <h4>
+            <a href="/doubt/{{ doubt.id }}">
+                {{ doubt.title }}
+            </a>
+        </h4>
+        <small>Posted on {{ doubt.created_at }}</small>
+    </div>
+{% else %}
+    <p>You haven’t posted any doubts yet.</p>
+{% endfor %}
+
+<hr>
+
+<h3>My Answers</h3>
+{% for answer in user_answers %}
+    <div class="answer-card">
+        <p>{{ answer.content }}</p>
+        <small>
+            On doubt:
+            <a href="/doubt/{{ answer.doubt_id }}">
+                View Question
+            </a>
+        </small>
+    </div>
+{% else %}
+    <p>You haven’t answered any doubts yet.</p>
+{% endfor %}
+
+{% endblock %}
