@@ -12,18 +12,35 @@
         <div class="logo">
             QURIO
         </div>
-        <ul class="nav-links">
-            <li><a href="/">Home</a></li>
-            <li><a href="/post_doubt">Post Doubt</a></li>
-            <li><a href="/register">Register</a></li>
-            <li><a href="/login">Login</a></li>
-        </ul>
+
+   <ul class="nav-links">
+
+    <li><a href="{{ url_for('main.home') }}">Home</a></li>
+    <li><a href="{{ url_for('main.post_doubt') }}">Post Doubt</a></li>
+
+    {% if current_user.is_authenticated %}
+
+        <li class="user-name">
+            Hello, {{ current_user.username }}
+        </li>
+
+        <li><a href="{{ url_for('main.logout') }}">Logout</a></li>
+
+    {% else %}
+
+        <li><a href="{{ url_for('main.register') }}">Register</a></li>
+        <li><a href="{{ url_for('main.login') }}">Login</a></li>
+
+    {% endif %}
+
+    </ul>
     </div>
 </nav>
 
 <!-- PAGE CONTENT -->
 <div class="container">
-    {% block content %}{% endblock %}
+    {% block content %}
+    {% endblock %}
 </div>
 
 </body>

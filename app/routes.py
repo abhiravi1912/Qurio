@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, redirect, url_for
+from flask import Blueprint, abort, render_template, redirect, url_for
 from app.forms import RegisterForm, DoubtForm
 from app.models import User, Doubt
 from app import db
@@ -52,7 +52,8 @@ def post_doubt():
         doubt = Doubt(
             title=form.title.data,
             description=form.description.data,
-            category=form.category.data
+            category=form.category.data,
+            user_id=current_user.id
         )
         db.session.add(doubt)
         db.session.commit()
@@ -73,18 +74,30 @@ from flask_login import login_required
 @login_required
 
 def doubt_detail(doubt_id):
+
     doubt = Doubt.query.get_or_404(doubt_id)
     answers = Answer.query.filter_by(doubt_id=doubt.id).all()
     form = AnswerForm()
 
     if form.validate_on_submit():
+
+        # Students cannot answer
+        if current_user.role != "faculty":
+            abort(403)
+
+        # Only assigned faculty can answer
+        if doubt.author.faculty_id != current_user.id:
+            abort(403)
+
         answer = Answer(
             content=form.content.data,
             doubt_id=doubt.id,
             user_id=current_user.id
         )
+
         db.session.add(answer)
         db.session.commit()
+
         return redirect(url_for("main.doubt_detail", doubt_id=doubt.id))
 
     return render_template(
@@ -93,6 +106,7 @@ def doubt_detail(doubt_id):
         answers=answers,
         form=form
     )
+
 
 from app.forms import LoginForm
 
@@ -119,3 +133,26 @@ def logout():
     logout_user()
     return redirect(url_for("main.home"))
 
+
+
+
+
+## temporary route to set up roles and faculty-student mapping
+
+# @main.route("/setup_roles")
+# def setup_roles():
+#     faculty = User.query.filter_by(username="MR RAVI").first()
+
+#     if faculty:
+#         faculty.role = "faculty"
+
+#         students = User.query.filter(User.username != "MR RAVI").all()
+#         for s in students:
+#             s.role = "student"
+#             s.faculty_id = faculty.id
+
+#         db.session.commit()
+
+#     return "Roles updated successfully!"
+
+    ## http://127.0.0.1:5000/setup_roles

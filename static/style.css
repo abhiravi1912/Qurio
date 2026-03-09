@@ -165,3 +165,9 @@ input:focus, textarea:focus, select:focus {
         font-size: 22px;
     }
 }
+
+.user-name{
+    color: white;
+    
+    margin-right: 10px;
+}

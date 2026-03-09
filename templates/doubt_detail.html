@@ -23,11 +23,21 @@
 
 <hr>
 
+{% block content %}
+
+... doubt content ...
+
+{% if current_user.role == "faculty" and doubt.author.faculty_id == current_user.id %}
+
 <h3>Post Your Answer</h3>
 
 <form method="POST">
     {{ form.hidden_tag() }}
-    <p>{{ form.content.label }}<br>{{ form.content(rows=4) }}</p>
-    <p>{{ form.submit() }}</p>
+    {{ form.content.label }}
+    {{ form.content }}
+    {{ form.submit }}
 </form>
+
+{% endif %}
+
 {% endblock %}
