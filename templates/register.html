@@ -1,15 +1,72 @@
 {% extends "layout.html" %}
 
 {% block content %}
+
 <h2>Register</h2>
 
 <form method="POST">
+
     {{ form.hidden_tag() }}
 
-    <p>{{ form.username.label }}<br>{{ form.username() }}</p>
-    <p>{{ form.email.label }}<br>{{ form.email() }}</p>
-    <p>{{ form.password.label }}<br>{{ form.password() }}</p>
+    <p>
+        {{ form.username.label }}
+        {{ form.username }}
+    </p>
 
-    <p>{{ form.submit() }}</p>
+    <p>
+        {{ form.email.label }}
+        {{ form.email }}
+    </p>
+
+    <p>
+        {{ form.password.label }}
+        {{ form.password }}
+    </p>
+
+    <p>
+   {{ form.role.label }}
+{{ form.role(id="role") }}
+   </p>
+
+<div id="faculty-field">
+   <p>
+{{ form.faculty.label }}
+{{ form.faculty(id="faculty") }}
+   </p>
+</div>
+
+    <p>
+        {{ form.submit }}
+    </p>
+
 </form>
+
+
+<script>
+
+function toggleFacultyField() {
+
+    let role = document.getElementById("role").value;
+    let facultyField = document.getElementById("faculty-field");
+
+    if (role === "student") {
+        facultyField.style.display = "block";
+    } else {
+        facultyField.style.display = "none";
+    }
+
+}
+
+document.addEventListener("DOMContentLoaded", function(){
+
+    let roleSelect = document.getElementById("role");
+
+    toggleFacultyField();
+
+    roleSelect.addEventListener("change", toggleFacultyField);
+
+});
+
+</script>
+
 {% endblock %}

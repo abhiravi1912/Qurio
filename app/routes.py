@@ -30,20 +30,37 @@ def home():
 
 
 
-
 @main.route("/register", methods=["GET", "POST"])
 def register():
+
     form = RegisterForm()
+
+    # Load faculty list
+    faculty_users = User.query.filter_by(role="faculty").all()
+    form.faculty.choices = [(f.id, f.username) for f in faculty_users]
+
     if form.validate_on_submit():
+
+        if form.role.data == "student":
+            faculty_id = form.faculty.data
+        else:
+            faculty_id = None
+
         user = User(
             username=form.username.data,
             email=form.email.data,
-            password=form.password.data
+            password=form.password.data,
+            role=form.role.data,
+            faculty_id=faculty_id
         )
+
         db.session.add(user)
         db.session.commit()
-        return redirect(url_for("main.home"))
+
+        return redirect(url_for("main.login"))
+
     return render_template("register.html", form=form)
+
 
 @main.route("/post_doubt", methods=["GET", "POST"])
 def post_doubt():
