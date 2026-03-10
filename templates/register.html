@@ -2,68 +2,115 @@
 
 {% block content %}
 
-<h2>Register</h2>
+<div class="container mt-5">
+
+<div class="row justify-content-center">
+
+<div class="col-md-6">
+
+<div class="card shadow-lg p-4">
+
+<h3 class="text-center mb-4">Create an Account</h3>
 
 <form method="POST">
 
-    {{ form.hidden_tag() }}
+{{ form.hidden_tag() }}
 
-    <p>
-        {{ form.username.label }}
-        {{ form.username }}
-    </p>
+<!-- Username -->
 
-    <p>
-        {{ form.email.label }}
-        {{ form.email }}
-    </p>
+<div class="mb-3">
 
-    <p>
-        {{ form.password.label }}
-        {{ form.password }}
-    </p>
+<label class="form-label">{{ form.username.label }}</label>
 
-    <p>
-   {{ form.role.label }}
-{{ form.role(id="role") }}
-   </p>
+{{ form.username(class="form-control") }}
 
-<div id="faculty-field">
-   <p>
-{{ form.faculty.label }}
-{{ form.faculty(id="faculty") }}
-   </p>
 </div>
 
-    <p>
-        {{ form.submit }}
-    </p>
+<!-- Email -->
+
+<div class="mb-3">
+
+<label class="form-label">{{ form.email.label }}</label>
+
+{{ form.email(class="form-control") }}
+
+{% for error in form.email.errors %}
+<div class="text-danger small">{{ error }}</div>
+{% endfor %}
+
+</div>
+
+<!-- Password -->
+
+<div class="mb-3">
+
+<label class="form-label">{{ form.password.label }}</label>
+
+{{ form.password(class="form-control") }}
+
+</div>
+
+<!-- Role -->
+
+<div class="mb-3">
+
+<label class="form-label">{{ form.role.label }}</label>
+
+{{ form.role(class="form-select", id="role") }}
+
+</div>
+
+<!-- Faculty select -->
+
+<div id="faculty-field" class="mb-3">
+
+<label class="form-label">{{ form.faculty.label }}</label>
+
+{{ form.faculty(class="form-select", id="faculty") }}
+
+</div>
+
+<!-- Submit -->
+
+<div class="d-grid">
+
+{{ form.submit(class="btn btn-primary btn-lg") }}
+
+</div>
 
 </form>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
 
 
 <script>
 
 function toggleFacultyField() {
 
-    let role = document.getElementById("role").value;
-    let facultyField = document.getElementById("faculty-field");
+let role = document.getElementById("role").value;
+let facultyField = document.getElementById("faculty-field");
 
-    if (role === "student") {
-        facultyField.style.display = "block";
-    } else {
-        facultyField.style.display = "none";
-    }
+if (role === "student") {
+facultyField.style.display = "block";
+} else {
+facultyField.style.display = "none";
+}
 
 }
 
 document.addEventListener("DOMContentLoaded", function(){
 
-    let roleSelect = document.getElementById("role");
+let roleSelect = document.getElementById("role");
 
-    toggleFacultyField();
+toggleFacultyField();
 
-    roleSelect.addEventListener("change", toggleFacultyField);
+roleSelect.addEventListener("change", toggleFacultyField);
 
 });
 

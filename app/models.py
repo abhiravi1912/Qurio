@@ -70,3 +70,45 @@ class Answer(db.Model):
 @login_manager.user_loader
 def load_user(user_id):
     return User.query.get(int(user_id))
+
+
+
+class Note(db.Model):
+
+    id = db.Column(db.Integer, primary_key=True)
+
+    title = db.Column(db.String(200), nullable=False)
+
+    content = db.Column(db.Text, nullable=False)
+
+    file = db.Column(db.String(200))
+
+    created_at = db.Column(db.DateTime)
+
+    faculty_id = db.Column(
+        db.Integer,
+        db.ForeignKey("user.id"),
+        nullable=False
+    )
+
+
+
+class NoteComment(db.Model):
+
+    id = db.Column(db.Integer, primary_key=True)
+
+    content = db.Column(db.Text, nullable=False)
+
+    created_at = db.Column(db.DateTime)
+
+    note_id = db.Column(
+        db.Integer,
+        db.ForeignKey("note.id"),
+        nullable=False
+    )
+
+    user_id = db.Column(
+        db.Integer,
+        db.ForeignKey("user.id"),
+        nullable=False
+    )

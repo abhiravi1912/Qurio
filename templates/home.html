@@ -1,49 +1,162 @@
 {% extends "layout.html" %}
-{% set request = request %}
-
 
 {% block content %}
-<h1>Welcome to QURIO 🚀</h1>
-<form method="GET" action="/" style="margin-bottom: 20px;">
-    <input
-        type="text"
-        name="q"
-        placeholder="Search doubts..."
-        value="{{ request.args.get('q', '') }}"
-        style="padding: 8px; width: 60%;"
-    >
-    <button type="submit">Search</button>
-</form>
 
+<div class="container mt-4">
 
-<p>
-    <strong>Filter by Category:</strong>
-    <a href="/">All</a> |
-    <a href="/category/Math">Math</a> |
-    <a href="/category/Physics">Physics</a> |
-    <a href="/category/Computer Science">Computer Science</a>
+<!-- HERO SECTION -->
+
+<div class="hero-section text-center p-5 mb-5 rounded shadow-sm">
+
+<h1 class="display-4 fw-bold">
+🚀 Welcome to QURIO
+</h1>
+
+<p class="lead text-muted">
+Ask doubts, get answers from faculty, and collaborate with classmates.
 </p>
 
+<div class="mt-4">
+
+<a href="{{ url_for('main.post_doubt') }}" class="btn btn-primary btn-lg me-2">
+Ask a Doubt
+</a>
+
+<a href="{{ url_for('main.notes') }}" class="btn btn-outline-dark btn-lg">
+Browse Notes
+</a>
+
+</div>
+
+</div>
+
+
+<!-- SEARCH BAR -->
+
+<div class="card shadow-sm p-3 mb-4">
+
+<form method="GET">
+
+<div class="input-group">
+
+<span class="input-group-text">🔎</span>
+
+<input
+type="text"
+name="q"
+placeholder="Search doubts..."
+class="form-control form-control-lg">
+
+<button class="btn btn-primary px-4">
+Search
+</button>
+
+</div>
+
+</form>
+
+</div>
+
+
+<!-- FILTER + POST BUTTON -->
+
+<div class="d-flex justify-content-between align-items-center mb-3 flex-wrap">
+
+<div>
+
+<strong class="me-2">Filter by Category:</strong>
+
+<a class="btn btn-outline-secondary btn-sm me-1" href="/">All</a>
+<a class="btn btn-outline-primary btn-sm me-1" href="/category/Math">Math</a>
+<a class="btn btn-outline-primary btn-sm me-1" href="/category/Physics">Physics</a>
+<a class="btn btn-outline-primary btn-sm me-1" href="/category/Computer Science">CS</a>
+
+</div>
+
+
+</div>
+
 <hr>
 
-<a class="btn secondary" href="/post_doubt">➕ Post a Doubt</a>
 
-<hr>
+<!-- DOUBT LIST -->
 
 {% for doubt in doubts %}
-    <div class="doubt">
-        <h3>
-    <a href="/doubt/{{ doubt.id }}">
-        [{{ doubt.category }}] {{ doubt.title }}
-    </a>
-</h3>
 
-        <p>{{ doubt.description }}</p>
-        <small>Posted on {{ doubt.created_at }}</small>
-        <p><strong>🗨️ {{ Answer.query.filter_by(doubt_id=doubt.id).count() }} Answers</strong></p>
+<div class="card mb-3 shadow-sm border-0">
 
-    </div>
+<div class="card-body">
+
+<div class="row align-items-center">
+
+<!-- ANSWER COUNT -->
+
+<div class="col-md-2 text-center border-end">
+
+<h4 class="text-primary mb-0">
+{{ Answer.query.filter_by(doubt_id=doubt.id).count() }}
+</h4>
+
+<small class="text-muted">Answers</small>
+
+</div>
+
+
+<!-- DOUBT CONTENT -->
+
+<div class="col-md-10">
+
+<h5 class="mb-1">
+
+<a href="/doubt/{{ doubt.id }}" class="text-decoration-none fw-semibold">
+
+<span class="badge bg-secondary me-2">
+{{ doubt.category }}
+</span>
+
+{{ doubt.title }}
+
+</a>
+
+</h5>
+
+<p class="text-muted mb-1">
+{{ doubt.description }}
+</p>
+
+<small class="text-secondary">
+Posted on {{ doubt.created_at }}
+</small>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
 {% else %}
-    <p>No doubts posted yet.</p>
+
+<!-- EMPTY STATE -->
+
+<div class="text-center p-5 border rounded bg-light">
+
+<h5 class="text-muted">No doubts posted yet</h5>
+
+<p class="text-muted">
+Be the first student to ask a question.
+</p>
+
+<a class="btn btn-success mt-2"
+href="{{ url_for('main.post_doubt') }}">
+Post the First Doubt
+</a>
+
+</div>
+
 {% endfor %}
+
+</div>
+
 {% endblock %}

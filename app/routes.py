@@ -30,21 +30,21 @@ def home():
 
 
 
-@main.route("/register", methods=["GET", "POST"])
+@main.route("/register", methods=["GET","POST"])
 def register():
 
     form = RegisterForm()
 
-    # Load faculty list
+    # load faculty list
     faculty_users = User.query.filter_by(role="faculty").all()
     form.faculty.choices = [(f.id, f.username) for f in faculty_users]
 
     if form.validate_on_submit():
 
-        if form.role.data == "student":
+        faculty_id = None
+
+        if form.role.data == "student" and form.faculty.data:
             faculty_id = form.faculty.data
-        else:
-            faculty_id = None
 
         user = User(
             username=form.username.data,
@@ -149,6 +149,118 @@ def login():
 def logout():
     logout_user()
     return redirect(url_for("main.home"))
+
+
+
+from app.forms import NoteForm
+from app.models import Note
+from datetime import datetime
+
+@main.route("/upload_note", methods=["GET", "POST"])
+@login_required
+def upload_note():
+
+    if current_user.role != "faculty":
+        abort(403)
+
+    form = NoteForm()
+
+    if form.validate_on_submit():
+
+        note = Note(
+            title=form.title.data,
+            content=form.content.data,
+            faculty_id=current_user.id,
+            created_at=datetime.utcnow()
+        )
+
+        db.session.add(note)
+        db.session.commit()
+
+        return redirect(url_for("main.home"))
+
+    return render_template("upload_note.html", form=form)
+
+
+from app.models import Note, NoteComment
+from app.forms import CommentForm
+
+@main.route("/notes")
+@login_required
+def notes():
+
+    notes = Note.query.all()
+
+    return render_template("notes.html", notes=notes)
+
+
+@main.route("/note/<int:note_id>", methods=["GET","POST"])
+@login_required
+def note_detail(note_id):
+
+    note = Note.query.get_or_404(note_id)
+
+    comments = NoteComment.query.filter_by(note_id=note.id).all()
+
+    form = CommentForm()
+
+    if form.validate_on_submit():
+
+        comment = NoteComment(
+            content=form.content.data,
+            note_id=note.id,
+            user_id=current_user.id
+        )
+
+        db.session.add(comment)
+        db.session.commit()
+
+        return redirect(url_for("main.note_detail", note_id=note.id))
+
+    return render_template(
+        "note_detail.html",
+        note=note,
+        comments=comments,
+        form=form
+    )
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
