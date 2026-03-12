@@ -2,31 +2,67 @@
 
 {% block content %}
 
-<h2>Upload Notes</h2>
+<div class="container mt-5">
 
-<form method="POST">
+<div class="row justify-content-center">
+
+<div class="col-md-7">
+
+<div class="card shadow-lg p-4">
+
+<h3 class="text-center mb-4">Upload Notes</h3>
+
+<form method="POST" enctype="multipart/form-data">
 
 {{ form.hidden_tag() }}
 
-<p>
-{{ form.title.label }}
-{{ form.title }}
-</p>
+<!-- Title -->
 
-<p>
-{{ form.content.label }}
-{{ form.content }}
-</p>
+<div class="mb-3">
+<label class="form-label">{{ form.title.label }}</label>
+{{ form.title(class="form-control", placeholder="Enter note title") }}
+</div>
 
-<p>
-{{ form.file.label }}
-{{ form.file }}
-</p>
+<!-- Write Notes -->
 
-<p>
-{{ form.submit }}
-</p>
+<div class="mb-3">
+<label class="form-label">{{ form.content.label }}</label>
+{{ form.content(class="form-control", rows="6",
+placeholder="Write notes or explanation here...") }}
+</div>
+
+<!-- Upload File -->
+
+<div class="mb-3">
+
+<label class="form-label">Upload Image / PDF</label>
+
+<input
+type="file"
+name="file"
+class="form-control"
+accept=".pdf,.png,.jpg,.jpeg">
+
+<small class="text-muted">
+Supported formats: PDF, PNG, JPG
+</small>
+
+</div>
+
+<!-- Submit -->
+
+<div class="d-grid">
+{{ form.submit(class="btn btn-primary btn-lg") }}
+</div>
 
 </form>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
 
 {% endblock %}
