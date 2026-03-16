@@ -5,7 +5,9 @@ from app import db
 from flask_login import login_user, logout_user, login_required, current_user
 from app.forms import LoginForm
 from flask import request
-
+import os
+from werkzeug.utils import secure_filename
+from flask import current_app
 
 
 main = Blueprint("main", __name__)
@@ -167,17 +169,36 @@ def upload_note():
 
     if form.validate_on_submit():
 
+        print("FORM SUBMITTED")
+
+        filename = None
+
+        if form.file.data:
+            file = form.file.data
+            filename = secure_filename(file.filename)
+
+            filepath = os.path.join(
+                current_app.config["UPLOAD_FOLDER"],
+                filename
+            )
+
+            file.save(filepath)
+
         note = Note(
             title=form.title.data,
             content=form.content.data,
-            faculty_id=current_user.id,
-            created_at=datetime.utcnow()
+            file=filename,
+            faculty_id=current_user.id
         )
 
         db.session.add(note)
         db.session.commit()
 
-        return redirect(url_for("main.home"))
+        return redirect(url_for("main.notes"))
+
+    else:
+        print("FORM FAILED")
+        print(form.errors)
 
     return render_template("upload_note.html", form=form)
 

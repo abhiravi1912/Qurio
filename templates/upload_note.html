@@ -23,33 +23,26 @@
 {{ form.title(class="form-control", placeholder="Enter note title") }}
 </div>
 
-<!-- Write Notes -->
+<!-- Content -->
 
 <div class="mb-3">
 <label class="form-label">{{ form.content.label }}</label>
-{{ form.content(class="form-control", rows="6",
-placeholder="Write notes or explanation here...") }}
+{{ form.content(class="form-control", rows="5",
+placeholder="Write explanation or notes here...") }}
 </div>
 
-<!-- Upload File -->
+<!-- File Upload -->
 
 <div class="mb-3">
-
-<label class="form-label">Upload Image / PDF</label>
-
-<input
-type="file"
-name="file"
-class="form-control"
-accept=".pdf,.png,.jpg,.jpeg">
+<label class="form-label">{{ form.file.label }}</label>
+{{ form.file(class="form-control") }}
 
 <small class="text-muted">
-Supported formats: PDF, PNG, JPG
+Upload PDF or image notes (optional)
 </small>
-
 </div>
 
-<!-- Submit -->
+<!-- Submit Button -->
 
 <div class="d-grid">
 {{ form.submit(class="btn btn-primary btn-lg") }}

@@ -61,13 +61,19 @@ class LoginForm(FlaskForm):
 from wtforms import TextAreaField, FileField
 from wtforms.validators import DataRequired
 
+from wtforms import FileField
+from flask_wtf.file import FileAllowed
+
 class NoteForm(FlaskForm):
 
     title = StringField("Title", validators=[DataRequired()])
 
     content = TextAreaField("Content", validators=[DataRequired()])
 
-    file = FileField("Upload File")
+    file = FileField(
+        "Upload File",
+        validators=[FileAllowed(["pdf","png","jpg","jpeg","mp4"])]
+    )
 
     submit = SubmitField("Upload Note")
 

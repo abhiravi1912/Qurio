@@ -81,7 +81,7 @@ class Note(db.Model):
 
     content = db.Column(db.Text, nullable=False)
 
-    file = db.Column(db.String(200))
+    file = db.Column(db.String(200))   # file name
 
     created_at = db.Column(db.DateTime)
 
