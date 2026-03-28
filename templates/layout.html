@@ -17,7 +17,6 @@ href="{{ url_for('static', filename='style.css') }}">
 
 </head>
 
-
 <body style="background:#f5f6fa;">
 
 <!-- NAVBAR -->
@@ -26,10 +25,12 @@ href="{{ url_for('static', filename='style.css') }}">
 
 <div class="container">
 
+<!-- BRAND -->
 <a class="navbar-brand fw-bold fs-4" href="{{ url_for('main.home') }}">
 🚀 QURIO
 </a>
 
+<!-- MOBILE TOGGLE -->
 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
 <span class="navbar-toggler-icon"></span>
 </button>
@@ -43,17 +44,25 @@ href="{{ url_for('static', filename='style.css') }}">
 </li>
 
 <li class="nav-item">
-<a class="nav-link" href="{{ url_for('main.post_doubt') }}">Post Doubt</a>
+<a class="nav-link" href="{{ url_for('main.post_doubt') }}">Doubt</a>
 </li>
 
 <li class="nav-item">
 <a class="nav-link" href="{{ url_for('main.notes') }}">Notes</a>
 </li>
 
+<li class="nav-item">
+<a class="nav-link" href="{{ url_for('main.view_quizzes') }}">Quizzes</a>
+</li>
+
 {% if current_user.is_authenticated and current_user.role == "faculty" %}
 
 <li class="nav-item">
-<a class="nav-link" href="{{ url_for('main.upload_note') }}">Upload Notes</a>
+<a class="nav-link" href="{{ url_for('main.upload_note') }}">Upload</a>
+</li>
+
+<li class="nav-item">
+<a class="nav-link" href="{{ url_for('main.create_quiz') }}">Create</a>
 </li>
 
 {% endif %}
@@ -61,8 +70,8 @@ href="{{ url_for('static', filename='style.css') }}">
 {% if current_user.is_authenticated %}
 
 <li class="nav-item ms-3">
-<span class="badge bg-light text-dark">
-👋 {{ current_user.username }}
+<span class="user-badge">
+{{ current_user.username }}
 </span>
 </li>
 
@@ -99,13 +108,11 @@ Register
 
 </nav>
 
-
 <!-- PAGE CONTENT -->
 
 <div class="container mt-4 main-container">
 
 {% block content %}
-
 {% endblock %}
 
 </div>
@@ -113,3 +120,5 @@ Register
 </body>
 
 </html>
+
+

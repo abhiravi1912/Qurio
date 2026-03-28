@@ -112,3 +112,45 @@ class NoteComment(db.Model):
         db.ForeignKey("user.id"),
         nullable=False
     )
+
+
+from datetime import datetime
+
+class Quiz(db.Model):
+
+    id = db.Column(db.Integer, primary_key=True)
+
+    title = db.Column(db.String(200), nullable=False)
+
+    description = db.Column(db.Text)
+
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+    faculty_id = db.Column(
+        db.Integer,
+        db.ForeignKey("user.id"),
+        nullable=False
+    )
+
+
+class Submission(db.Model):
+
+    id = db.Column(db.Integer, primary_key=True)
+
+    answer = db.Column(db.Text, nullable=False)
+
+    submitted_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+    quiz_id = db.Column(
+        db.Integer,
+        db.ForeignKey("quiz.id"),
+        nullable=False
+    )
+
+    student_id = db.Column(
+        db.Integer,
+        db.ForeignKey("user.id"),
+        nullable=False
+    )
+
+    

@@ -85,4 +85,21 @@ class CommentForm(FlaskForm):
 
     submit = SubmitField("Post Comment")
 
-    
+from datetime import datetime
+
+
+class QuizForm(FlaskForm):
+
+    title = StringField("Quiz Title", validators=[DataRequired()])
+
+    description = TextAreaField("Question", validators=[DataRequired()])
+
+    submit = SubmitField("Create Quiz")
+
+
+class SubmissionForm(FlaskForm):
+
+    answer = TextAreaField("Your Answer", validators=[DataRequired()])
+
+    submit = SubmitField("Submit Answer")
+

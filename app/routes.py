@@ -14,6 +14,9 @@ main = Blueprint("main", __name__)
 
 from app.models import Answer
 from flask_login import current_user
+from app.models import Quiz, Submission
+from app.forms import QuizForm, SubmissionForm
+from datetime import datetime
 
 
 @main.route("/")
@@ -246,14 +249,95 @@ def note_detail(note_id):
     )
 
 
+@main.route("/create_quiz", methods=["GET", "POST"])
+@login_required
+def create_quiz():
+
+    if current_user.role != "faculty":
+        abort(403)
+
+    form = QuizForm()
+
+    if form.validate_on_submit():
+
+        quiz = Quiz(
+            title=form.title.data,
+            description=form.description.data,
+            faculty_id=current_user.id
+        )
+
+        db.session.add(quiz)
+        db.session.commit()
+
+        return redirect(url_for("main.view_quizzes"))
+
+    return render_template("create_quiz.html", form=form)
 
 
+@main.route("/quizzes")
+@login_required
+def view_quizzes():
+
+    if current_user.role == "student":
+        quizzes = Quiz.query.filter_by(
+            faculty_id=current_user.faculty_id
+        ).all()
+    else:
+        quizzes = Quiz.query.filter_by(
+            faculty_id=current_user.id
+        ).all()
+
+    return render_template("quizzes.html", quizzes=quizzes)
 
 
+@main.route("/quiz/<int:quiz_id>", methods=["GET", "POST"])
+@login_required
+def quiz_detail(quiz_id):
 
+    quiz = Quiz.query.get_or_404(quiz_id)
 
+    form = SubmissionForm()
 
+    if form.validate_on_submit():
 
+        if current_user.role != "student":
+            abort(403)
+
+        submission = Submission(
+            answer=form.answer.data,
+            quiz_id=quiz.id,
+            student_id=current_user.id
+        )
+
+        db.session.add(submission)
+        db.session.commit()
+
+        return redirect(url_for("main.view_quizzes"))
+
+    return render_template(
+        "quiz_detail.html",
+        quiz=quiz,
+        form=form
+    )
+
+@main.route("/quiz/<int:quiz_id>/submissions")
+@login_required
+def view_submissions(quiz_id):
+
+    quiz = Quiz.query.get_or_404(quiz_id)
+
+    if current_user.role != "faculty":
+        abort(403)
+
+    submissions = Submission.query.filter_by(
+        quiz_id=quiz.id
+    ).all()
+
+    return render_template(
+        "submissions.html",
+        quiz=quiz,
+        submissions=submissions
+    )
 
 
 

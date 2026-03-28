@@ -149,3 +149,57 @@ margin-bottom:4px;
 .card{
 border-radius:12px;
 }
+
+/* Navbar gradient */
+
+.custom-navbar{
+background:linear-gradient(90deg,#2563eb,#1d4ed8);
+}
+
+/* Brand */
+
+.navbar-brand{
+letter-spacing:0.5px;
+}
+
+/* Nav links */
+
+.nav-link{
+color:white !important;
+font-weight:600;
+margin-right:12px;
+position:relative;
+}
+
+/* Hover underline animation */
+
+.nav-link::after{
+content:'';
+position:absolute;
+left:0;
+bottom:-3px;
+width:0;
+height:2px;
+background:white;
+transition:0.3s;
+}
+
+.nav-link:hover::after{
+width:100%;
+}
+
+/* Buttons */
+
+.btn-light, .btn-outline-light{
+border-radius:8px;
+}
+
+/* User badge */
+
+.user-badge{
+background:white;
+color:#1d4ed8;
+padding:5px 10px;
+border-radius:8px;
+font-weight:600;
+}

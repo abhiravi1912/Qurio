@@ -1,0 +1,84 @@
+{% extends "layout.html" %}
+
+{% block content %}
+
+<div class="container mt-4">
+
+<!-- HEADER -->
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+
+<h3 class="mb-0">📊 Submissions</h3>
+
+<span class="badge bg-primary">
+{{ quiz.title }}
+</span>
+
+</div>
+
+
+<!-- SUBMISSIONS LIST -->
+
+{% if submissions %}
+
+<div class="row">
+
+{% for sub in submissions %}
+
+<div class="col-md-6 mb-4">
+
+<div class="card shadow-sm h-100">
+
+<div class="card-body">
+
+<!-- Student -->
+
+<p class="mb-2">
+<strong>👤 Student ID:</strong> {{ sub.student_id }}
+</p>
+
+<!-- Answer -->
+
+<div class="answer-box mb-2">
+
+<p class="mb-1">
+{{ sub.answer }}
+</p>
+
+</div>
+
+<!-- Date -->
+
+<small class="text-muted">
+🕒 {{ sub.submitted_at }}
+</small>
+
+</div>
+
+</div>
+
+</div>
+
+{% endfor %}
+
+</div>
+
+{% else %}
+
+<!-- EMPTY STATE -->
+
+<div class="text-center p-5 border rounded bg-light">
+
+<h5 class="text-muted">No submissions yet</h5>
+
+<p class="text-muted">
+Students have not submitted answers for this quiz.
+</p>
+
+</div>
+
+{% endif %}
+
+</div>
+
+{% endblock %}
