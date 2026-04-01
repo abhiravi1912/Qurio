@@ -203,3 +203,39 @@ padding:5px 10px;
 border-radius:8px;
 font-weight:600;
 }
+
+.question-block{
+background:#f8fafc;
+padding:15px;
+border-radius:10px;
+border:1px solid #e5e7eb;
+}
+
+.card{
+border-radius:12px;
+}
+
+textarea{
+resize:vertical;
+}
+
+/* Submission cards */
+
+.submission-card{
+border-radius:12px;
+transition:0.2s;
+}
+
+.submission-card:hover{
+transform:translateY(-3px);
+box-shadow:0 6px 18px rgba(0,0,0,0.1);
+}
+
+/* Answer box */
+
+.answer-box{
+background:#f8fafc;
+padding:10px 12px;
+border-radius:8px;
+border:1px solid #e5e7eb;
+}

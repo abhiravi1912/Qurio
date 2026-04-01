@@ -8,20 +8,11 @@
 
 <div class="card shadow-sm p-4 mb-4">
 
-<div class="d-flex justify-content-between align-items-center">
+<h2 class="mb-2">{{ quiz.title }}</h2>
 
-<div>
-<h2 class="mb-1">{{ quiz.title }}</h2>
 <p class="text-muted mb-0">
 Total Questions: {{ questions|length }}
 </p>
-</div>
-
-<span class="badge bg-primary">
-Quiz
-</span>
-
-</div>
 
 </div>
 
@@ -34,18 +25,17 @@ Quiz
 
 {% for q in questions %}
 
-<div class="card shadow-sm mb-3 question-card">
+<div class="card shadow-sm mb-3">
 
 <div class="card-body">
 
-<h5 class="mb-3 fw-semibold">
-Q{{ loop.index }}. {{ q.text }}
+<h5 class="mb-3">
+{{ loop.index }}. {{ q.text }}
 </h5>
 
-<textarea 
-name="question_{{ q.id }}"
+<textarea name="question_{{ q.id }}"
 class="form-control"
-rows="4"
+rows="3"
 placeholder="Write your answer here..."
 required></textarea>
 
@@ -57,10 +47,10 @@ required></textarea>
 
 <!-- SUBMIT BUTTON -->
 
-<div class="text-end mt-4">
+<div class="d-grid mt-4">
 
-<button class="btn btn-primary btn-lg px-4">
-Submit Answers
+<button class="btn btn-primary btn-lg">
+Submit All Answers
 </button>
 
 </div>

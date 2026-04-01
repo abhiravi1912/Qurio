@@ -103,3 +103,8 @@ class SubmissionForm(FlaskForm):
 
     submit = SubmitField("Submit Answer")
 
+class QuestionForm(FlaskForm):
+
+    text = TextAreaField("Question", validators=[DataRequired()])
+
+    submit = SubmitField("Add Question")

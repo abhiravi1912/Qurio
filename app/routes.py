@@ -10,14 +10,15 @@ from werkzeug.utils import secure_filename
 from flask import current_app
 
 
+
 main = Blueprint("main", __name__)
 
 from app.models import Answer
 from flask_login import current_user
-from app.models import Quiz, Submission
+from app.models import Quiz, Submission, Question
 from app.forms import QuizForm, SubmissionForm
 from datetime import datetime
-
+from app.models import Quiz, Question, Submission, QuizAnswer
 
 @main.route("/")
 def home():
@@ -249,6 +250,13 @@ def note_detail(note_id):
     )
 
 
+
+                                      ## QUIZES
+
+
+from flask_login import current_user
+from datetime import datetime
+
 @main.route("/create_quiz", methods=["GET", "POST"])
 @login_required
 def create_quiz():
@@ -256,23 +264,35 @@ def create_quiz():
     if current_user.role != "faculty":
         abort(403)
 
-    form = QuizForm()
+    if request.method == "POST":
 
-    if form.validate_on_submit():
+        title = request.form.get("title")
+        questions = request.form.getlist("questions[]")
 
         quiz = Quiz(
-            title=form.title.data,
-            description=form.description.data,
-            faculty_id=current_user.id
+            title=title,
+            description="",
+            faculty_id=current_user.id,
+            created_at=datetime.utcnow()
         )
 
         db.session.add(quiz)
         db.session.commit()
 
+        # Save questions
+        for q in questions:
+            if q.strip() != "":
+                question = Question(
+                    text=q,
+                    quiz_id=quiz.id
+                )
+                db.session.add(question)
+
+        db.session.commit()
+
         return redirect(url_for("main.view_quizzes"))
 
-    return render_template("create_quiz.html", form=form)
-
+    return render_template("create_quiz.html")
 
 @main.route("/quizzes")
 @login_required
@@ -290,67 +310,78 @@ def view_quizzes():
     return render_template("quizzes.html", quizzes=quizzes)
 
 
+
 @main.route("/quiz/<int:quiz_id>", methods=["GET", "POST"])
 @login_required
-def quiz_detail(quiz_id):
+def take_quiz(quiz_id):
 
     quiz = Quiz.query.get_or_404(quiz_id)
+    questions = Question.query.filter_by(quiz_id=quiz_id).all()
 
-    form = SubmissionForm()
+    if request.method == "POST":
 
-    if form.validate_on_submit():
-
-        if current_user.role != "student":
-            abort(403)
-
+        # Create submission
         submission = Submission(
-            answer=form.answer.data,
-            quiz_id=quiz.id,
-            student_id=current_user.id
+            student_id=current_user.id,
+            quiz_id=quiz_id
         )
 
         db.session.add(submission)
         db.session.commit()
 
+        # Save answers
+        for q in questions:
+            ans = request.form.get(f"question_{q.id}")
+
+            if ans:
+                answer = QuizAnswer(
+                    submission_id=submission.id,
+                    question_id=q.id,
+                    answer_text=ans
+                )
+                db.session.add(answer)
+
+        db.session.commit()
+
         return redirect(url_for("main.view_quizzes"))
 
     return render_template(
-        "quiz_detail.html",
+        "take_quiz.html",
         quiz=quiz,
-        form=form
+        questions=questions
     )
+
 
 @main.route("/quiz/<int:quiz_id>/submissions")
 @login_required
 def view_submissions(quiz_id):
 
-    quiz = Quiz.query.get_or_404(quiz_id)
-
     if current_user.role != "faculty":
         abort(403)
 
-    submissions = Submission.query.filter_by(
-        quiz_id=quiz.id
-    ).all()
+    quiz = Quiz.query.get_or_404(quiz_id)
+
+    submissions = Submission.query.filter_by(quiz_id=quiz_id).all()
+
+    questions = Question.query.filter_by(quiz_id=quiz_id).all()
+
+    # collect answers per submission
+    submission_data = []
+
+    for sub in submissions:
+        answers = QuizAnswer.query.filter_by(submission_id=sub.id).all()
+
+        submission_data.append({
+            "submission": sub,
+            "answers": answers
+        })
 
     return render_template(
         "submissions.html",
         quiz=quiz,
-        submissions=submissions
+        questions=questions,
+        submission_data=submission_data
     )
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

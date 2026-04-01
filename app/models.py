@@ -4,6 +4,7 @@ from flask_login import UserMixin
 from app import login_manager
 
 
+
 class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
 
@@ -116,6 +117,7 @@ class NoteComment(db.Model):
 
 from datetime import datetime
 
+
 class Quiz(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
@@ -133,24 +135,30 @@ class Quiz(db.Model):
     )
 
 
-class Submission(db.Model):
+
+
+class Question(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
 
-    answer = db.Column(db.Text, nullable=False)
-
-    submitted_at = db.Column(db.DateTime, default=datetime.utcnow)
+    text = db.Column(db.Text, nullable=False)
 
     quiz_id = db.Column(
         db.Integer,
         db.ForeignKey("quiz.id"),
         nullable=False
-    )
+    )   
 
-    student_id = db.Column(
-        db.Integer,
-        db.ForeignKey("user.id"),
-        nullable=False
-    )
+# Submission Table
+class Submission(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    student_id = db.Column(db.Integer, nullable=False)
+    quiz_id = db.Column(db.Integer, nullable=False)
 
-    
+
+# Answer Table (IMPORTANT)
+class QuizAnswer(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    submission_id = db.Column(db.Integer, nullable=False)
+    question_id = db.Column(db.Integer, nullable=False)
+    answer_text = db.Column(db.Text, nullable=False)

@@ -8,7 +8,7 @@
 
 <div class="d-flex justify-content-between align-items-center mb-4">
 
-<h3 class="mb-0">📊 Submissions</h3>
+<h3 class="mb-0">Submissions</h3>
 
 <span class="badge bg-primary">
 {{ quiz.title }}
@@ -16,44 +16,46 @@
 
 </div>
 
+{% if submission_data %}
 
-<!-- SUBMISSIONS LIST -->
+{% for item in submission_data %}
 
-{% if submissions %}
-
-<div class="row">
-
-{% for sub in submissions %}
-
-<div class="col-md-6 mb-4">
-
-<div class="card shadow-sm h-100">
+<div class="card shadow-sm mb-4 submission-card">
 
 <div class="card-body">
 
-<!-- Student -->
+<!-- Student Info -->
 
-<p class="mb-2">
-<strong>👤 Student ID:</strong> {{ sub.student_id }}
-</p>
-
-<!-- Answer -->
-
-<div class="answer-box mb-2">
-
-<p class="mb-1">
-{{ sub.answer }}
-</p>
-
+<div class="mb-3">
+<strong>Student ID:</strong> {{ item.submission.student_id }}
 </div>
 
-<!-- Date -->
+<hr>
 
-<small class="text-muted">
-🕒 {{ sub.submitted_at }}
-</small>
+<!-- Questions + Answers -->
 
-</div>
+{% for q in questions %}
+
+<div class="mb-3">
+
+<p class="fw-semibold mb-1">
+Q{{ loop.index }}. {{ q.text }}
+</p>
+
+<div class="answer-box">
+
+{% set found = false %}
+
+{% for ans in item.answers %}
+    {% if ans.question_id == q.id %}
+        {{ ans.answer_text }}
+        {% set found = true %}
+    {% endif %}
+{% endfor %}
+
+{% if not found %}
+    <span class="text-muted"></span>
+{% endif %}
 
 </div>
 
@@ -62,6 +64,10 @@
 {% endfor %}
 
 </div>
+
+</div>
+
+{% endfor %}
 
 {% else %}
 
