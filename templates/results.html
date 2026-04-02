@@ -1,0 +1,101 @@
+{% extends "layout.html" %}
+
+{% block content %}
+
+<div class="container mt-4">
+
+<!-- HEADER -->
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+
+<h3 class="mb-0">My Results</h3>
+
+<span class="text-muted small">
+View your quiz performance
+</span>
+
+</div>
+
+{% if submissions %}
+
+{% for sub in submissions %}
+
+<div class="card shadow-sm mb-4 p-4">
+
+<!-- QUIZ HEADER -->
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+
+<h5 class="mb-0">Quiz ID: {{ sub.quiz_id }}</h5>
+
+<span class="badge bg-primary">
+Result
+</span>
+
+</div>
+
+<hr>
+
+{% set ns = namespace(total=0) %}
+
+<!-- QUESTIONS -->
+
+{% for ans in sub.answers %}
+
+<div class="mb-3">
+
+<p class="fw-semibold mb-1">
+Q{{ loop.index }}. {{ ans.question.text }}
+</p>
+
+<div class="answer-box mb-1">
+{{ ans.answer_text }}
+</div>
+
+<p class="text-muted small mb-0">
+Marks: <strong>{{ ans.marks or 0 }}</strong>
+</p>
+
+</div>
+
+{% set ns.total = ns.total + (ans.marks or 0) %}
+
+{% endfor %}
+
+<hr>
+
+<!-- TOTAL SCORE -->
+
+<div class="d-flex justify-content-between align-items-center">
+
+<h5 class="mb-0">Total Score</h5>
+
+<span class="badge bg-success fs-6 px-3 py-2">
+{{ ns.total }}
+</span>
+
+</div>
+
+</div>
+
+{% endfor %}
+
+{% else %}
+
+<!-- EMPTY STATE -->
+
+<div class="text-center p-5 border rounded bg-light">
+
+<h5 class="text-muted">No results yet</h5>
+
+<p class="text-muted">
+You haven't submitted any quizzes yet.
+</p>
+
+</div>
+
+{% endif %}
+
+</div>
+
+{% endblock %}

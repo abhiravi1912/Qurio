@@ -11,51 +11,82 @@
 <h3 class="mb-0">Submissions</h3>
 
 <span class="badge bg-primary">
-{{ quiz.title }}
+{% if submissions %}
+Quiz ID: {{ submissions[0].quiz_id }}
+{% else %}
+No Quiz
+{% endif %}
 </span>
 
 </div>
 
-{% if submission_data %}
+<form method="POST">
 
-{% for item in submission_data %}
+{% if submissions %}
 
-<div class="card shadow-sm mb-4 submission-card">
+{% for sub in submissions %}
 
-<div class="card-body">
+<div class="card shadow-sm mb-4 p-4">
 
-<!-- Student Info -->
+<!-- STUDENT HEADER -->
 
-<div class="mb-3">
-<strong>Student ID:</strong> {{ item.submission.student_id }}
+<div class="d-flex justify-content-between align-items-center mb-3">
+
+<h5 class="mb-0">Student: {{ sub.user.username }}</h5>
+
+<span class=" bg-success">
+
+</span>
+
 </div>
 
 <hr>
 
-<!-- Questions + Answers -->
+{% set ns = namespace(total=0) %}
 
-{% for q in questions %}
+<!-- QUESTIONS + ANSWERS -->
 
-<div class="mb-3">
+{% for ans in sub.answers %}
+
+<div class="mb-4">
 
 <p class="fw-semibold mb-1">
-Q{{ loop.index }}. {{ q.text }}
+Q{{ loop.index }}. {{ ans.question.text }}
 </p>
 
-<div class="answer-box">
+<div class="answer-box mb-2">
+{{ ans.answer_text }}
+</div>
 
-{% set found = false %}
+<div class="d-flex align-items-center gap-2">
 
-{% for ans in item.answers %}
-    {% if ans.question_id == q.id %}
-        {{ ans.answer_text }}
-        {% set found = true %}
-    {% endif %}
+<label class="text-muted small">Marks:</label>
+
+<input type="number"
+       name="marks_{{ ans.id }}"
+       value="{{ ans.marks or '' }}"
+       class="form-control form-control-sm"
+       style="width:100px">
+
+</div>
+
+</div>
+
+{% set ns.total = ns.total + (ans.marks or 0) %}
+
 {% endfor %}
 
-{% if not found %}
-    <span class="text-muted"></span>
-{% endif %}
+<hr>
+
+<!-- TOTAL -->
+
+<div class="d-flex justify-content-between align-items-center">
+
+<h6 class="mb-0">Calculated Total</h6>
+
+<span class="badge bg-primary px-3 py-2">
+{{ ns.total }}
+</span>
 
 </div>
 
@@ -63,11 +94,15 @@ Q{{ loop.index }}. {{ q.text }}
 
 {% endfor %}
 
-</div>
+<!-- SAVE BUTTON -->
+
+<div class="text-end mt-4">
+
+<button class="btn btn-primary btn-lg px-4">
+Save Grades
+</button>
 
 </div>
-
-{% endfor %}
 
 {% else %}
 
@@ -78,12 +113,14 @@ Q{{ loop.index }}. {{ q.text }}
 <h5 class="text-muted">No submissions yet</h5>
 
 <p class="text-muted">
-Students have not submitted answers for this quiz.
+Students have not submitted this quiz.
 </p>
 
 </div>
 
 {% endif %}
+
+</form>
 
 </div>
 

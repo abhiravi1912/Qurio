@@ -352,41 +352,48 @@ def take_quiz(quiz_id):
     )
 
 
-@main.route("/quiz/<int:quiz_id>/submissions")
+@main.route("/quiz/<int:quiz_id>/submissions", methods=["GET","POST"])
 @login_required
 def view_submissions(quiz_id):
 
     if current_user.role != "faculty":
         abort(403)
 
-    quiz = Quiz.query.get_or_404(quiz_id)
-
     submissions = Submission.query.filter_by(quiz_id=quiz_id).all()
 
-    questions = Question.query.filter_by(quiz_id=quiz_id).all()
+    if request.method == "POST":
 
-    # collect answers per submission
-    submission_data = []
+        print("FORM DATA:", request.form)   # 🔥 DEBUG
 
-    for sub in submissions:
-        answers = QuizAnswer.query.filter_by(submission_id=sub.id).all()
+        for key, value in request.form.items():
 
-        submission_data.append({
-            "submission": sub,
-            "answers": answers
-        })
+            if key.startswith("marks_"):
+                answer_id = key.split("_")[1]
 
-    return render_template(
-        "submissions.html",
-        quiz=quiz,
-        questions=questions,
-        submission_data=submission_data
-    )
+                answer = QuizAnswer.query.get(answer_id)
 
+                if answer:
+                    answer.marks = int(value) if value else 0
+
+        db.session.commit()
+        print("MARKS SAVED ✅")
+
+    return render_template("submissions.html", submissions=submissions)
 
 
 
+@main.route("/my_results")
+@login_required
+def my_results():
 
+    if current_user.role != "student":
+        abort(403)
+
+    submissions = Submission.query.filter_by(
+        student_id=current_user.id
+    ).all()
+
+    return render_template("results.html", submissions=submissions)
 
 
 

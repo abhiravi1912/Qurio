@@ -4,7 +4,25 @@
 
 <div class="container mt-4">
 
-<h2 class="mb-4">📚 Quizzes</h2>
+<!-- HEADER -->
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+
+<div>
+<h3 class="mb-1">Quizzes</h3>
+<p class="text-muted small mb-0">Attempt quizzes or review submissions</p>
+</div>
+
+{% if current_user.role == "faculty" %}
+<a href="{{ url_for('main.create_quiz') }}"
+class="btn btn-primary">
+Create Quiz
+</a>
+{% endif %}
+
+</div>
+
+<!-- QUIZ GRID -->
 
 <div class="row">
 
@@ -12,29 +30,35 @@
 
 <div class="col-md-4 mb-4">
 
-<div class="card shadow-sm h-100">
+<div class="card shadow-sm h-100 quiz-card">
 
 <div class="card-body d-flex flex-column">
 
-<h5 class="card-title">
+<!-- TITLE -->
+
+<h5 class="card-title mb-2">
 {{ quiz.title }}
 </h5>
 
-<p class="text-muted flex-grow-1">
-{{ quiz.description }}
+<!-- DESCRIPTION -->
+
+<p class="text-muted small flex-grow-1">
+
 </p>
 
-<div class="mt-3">
+<!-- ACTIONS -->
+
+<div class="mt-3 d-flex gap-2 flex-wrap">
 
 <a href="{{ url_for('main.take_quiz', quiz_id=quiz.id) }}"
-class="btn btn-primary btn-sm me-2">
+class="btn btn-primary btn-sm">
 Take Quiz
 </a>
 
 {% if current_user.role == "faculty" %}
 
 <a href="{{ url_for('main.view_submissions', quiz_id=quiz.id) }}"
-class="btn btn-outline-secondary btn-sm">
+class="btn btn-outline-primary btn-sm">
 Submissions
 </a>
 
@@ -50,11 +74,26 @@ Submissions
 
 {% else %}
 
+<!-- EMPTY STATE -->
+
 <div class="text-center p-5">
 
 <h5 class="text-muted">No quizzes available</h5>
 
-<p class="text-muted">Create a quiz to get started.</p>
+<p class="text-muted">
+{% if current_user.role == "faculty" %}
+Create your first quiz to get started.
+{% else %}
+No quizzes have been published yet.
+{% endif %}
+</p>
+
+{% if current_user.role == "faculty" %}
+<a href="{{ url_for('main.create_quiz') }}"
+class="btn btn-primary mt-2">
+Create Quiz
+</a>
+{% endif %}
 
 </div>
 

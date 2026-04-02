@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 
 <head>
 
@@ -17,7 +17,7 @@ href="{{ url_for('static', filename='style.css') }}">
 
 </head>
 
-<body style="background:#f5f6fa;">
+<body class="bg-light">
 
 <!-- NAVBAR -->
 
@@ -30,7 +30,7 @@ href="{{ url_for('static', filename='style.css') }}">
 🚀 QURIO
 </a>
 
-<!-- MOBILE TOGGLE -->
+<!-- TOGGLE -->
 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
 <span class="navbar-toggler-icon"></span>
 </button>
@@ -40,29 +40,46 @@ href="{{ url_for('static', filename='style.css') }}">
 <ul class="navbar-nav ms-auto align-items-center">
 
 <li class="nav-item">
-<a class="nav-link" href="{{ url_for('main.home') }}">Home</a>
+<a class="nav-link {% if request.endpoint == 'main.home' %}active-link{% endif %}"
+href="{{ url_for('main.home') }}">Home</a>
 </li>
 
 <li class="nav-item">
-<a class="nav-link" href="{{ url_for('main.post_doubt') }}">Doubt</a>
+<a class="nav-link {% if request.endpoint == 'main.post_doubt' %}active-link{% endif %}"
+href="{{ url_for('main.post_doubt') }}">Doubt</a>
 </li>
 
 <li class="nav-item">
-<a class="nav-link" href="{{ url_for('main.notes') }}">Notes</a>
+<a class="nav-link {% if request.endpoint == 'main.notes' %}active-link{% endif %}"
+href="{{ url_for('main.notes') }}">Notes</a>
 </li>
 
 <li class="nav-item">
-<a class="nav-link" href="{{ url_for('main.view_quizzes') }}">Quizzes</a>
+<a class="nav-link {% if request.endpoint == 'main.view_quizzes' %}active-link{% endif %}"
+href="{{ url_for('main.view_quizzes') }}">Quizzes</a>
 </li>
+
+{% if current_user.is_authenticated and current_user.role == "student" %}
+
+<li class="nav-item">
+<a class="nav-link {% if request.endpoint == 'main.my_results' %}active-link{% endif %}"
+href="{{ url_for('main.my_results') }}">
+My Results
+</a>
+</li>
+
+{% endif %}
 
 {% if current_user.is_authenticated and current_user.role == "faculty" %}
 
 <li class="nav-item">
-<a class="nav-link" href="{{ url_for('main.upload_note') }}">Upload</a>
+<a class="nav-link"
+href="{{ url_for('main.upload_note') }}">Upload</a>
 </li>
 
 <li class="nav-item">
-<a class="nav-link" href="{{ url_for('main.create_quiz') }}">Create</a>
+<a class="nav-link"
+href="{{ url_for('main.create_quiz') }}">Create</a>
 </li>
 
 {% endif %}
@@ -108,7 +125,7 @@ Register
 
 </nav>
 
-<!-- PAGE CONTENT -->
+<!-- CONTENT -->
 
 <div class="container mt-4 main-container">
 
@@ -117,8 +134,15 @@ Register
 
 </div>
 
+<!-- FOOTER -->
+
+<footer class="text-center mt-5 mb-3 text-muted small">
+© 2026 QURIO • Built for learning
+</footer>
+
+<!-- Bootstrap JS (IMPORTANT for mobile toggle) -->
+<script src="{{ url_for('static', filename='bootstrap.bundle.min.js') }}"></script>
+
 </body>
 
 </html>
-
-

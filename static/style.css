@@ -1,3 +1,52 @@
+/* Navbar */
+
+.custom-navbar{
+background:linear-gradient(90deg,#2563eb,#1d4ed8);
+}
+
+/* Active link */
+
+.active-link{
+font-weight:700;
+border-bottom:2px solid white;
+
+}
+
+/* Links */
+
+.nav-link{
+color:white !important;
+margin-right:12px;
+position:relative;
+}
+
+/* User badge */
+
+.user-badge{
+background:white;
+color:#1d4ed8;
+padding:5px 10px;
+border-radius:8px;
+font-weight:600;
+}
+
+/* Container */
+
+.main-container{
+min-height:80vh;
+}
+
+/* General cards */
+
+.card{
+border-radius:12px;
+transition:0.2s;
+}
+
+.card:hover{
+transform:translateY(-3px);
+box-shadow:0 6px 18px rgba(0,0,0,0.1);
+}
 body {
     background: #1c40cf;
     font-family: Arial, sans-serif;
@@ -238,4 +287,83 @@ background:#f8fafc;
 padding:10px 12px;
 border-radius:8px;
 border:1px solid #e5e7eb;
+}
+
+/* Answer box */
+
+.answer-box{
+background:#f8fafc;
+padding:12px;
+border-radius:8px;
+border:1px solid #e5e7eb;
+}
+
+/* Marks input */
+
+.marks-input input{
+max-width:120px;
+}
+
+/* Card spacing */
+
+.card{
+border-radius:12px;
+transition:0.2s;
+}
+
+.card:hover{
+transform:translateY(-3px);
+box-shadow:0 6px 18px rgba(0,0,0,0.1);
+}
+
+.answer-box{
+background:#f8fafc;
+padding:12px;
+border-radius:8px;
+border:1px solid #e5e7eb;
+}
+
+.card{
+border-radius:12px;
+transition:0.2s;
+}
+
+.card:hover{
+transform:translateY(-3px);
+box-shadow:0 6px 18px rgba(0,0,0,0.1);
+}
+
+.answer-box{
+background:#f8fafc;
+padding:12px;
+border-radius:8px;
+border:1px solid #e5e7eb;
+}
+
+.card{
+border-radius:12px;
+transition:0.2s;
+}
+
+.card:hover{
+transform:translateY(-3px);
+box-shadow:0 6px 18px rgba(0,0,0,0.1);
+}
+
+/* Quiz card */
+
+.quiz-card{
+border-radius:12px;
+transition:0.2s;
+}
+
+.quiz-card:hover{
+transform:translateY(-4px);
+box-shadow:0 8px 20px rgba(0,0,0,0.1);
+}
+
+/* Buttons spacing */
+
+.btn-sm{
+border-radius:6px;
 }

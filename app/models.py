@@ -135,8 +135,6 @@ class Quiz(db.Model):
     )
 
 
-
-
 class Question(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
@@ -154,11 +152,24 @@ class Submission(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     student_id = db.Column(db.Integer, nullable=False)
     quiz_id = db.Column(db.Integer, nullable=False)
+    score = db.Column(db.Integer) 
 
+    id = db.Column(db.Integer, primary_key=True)
+
+    student_id = db.Column(db.Integer, db.ForeignKey("user.id"))
+    quiz_id = db.Column(db.Integer, db.ForeignKey("quiz.id"))
+
+    answers = db.relationship("QuizAnswer", backref="submission", lazy=True)
+    user = db.relationship("User", backref="submissions")
 
 # Answer Table (IMPORTANT)
 class QuizAnswer(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    submission_id = db.Column(db.Integer, nullable=False)
-    question_id = db.Column(db.Integer, nullable=False)
-    answer_text = db.Column(db.Text, nullable=False)
+
+    submission_id = db.Column(db.Integer, db.ForeignKey("submission.id"))
+    question_id = db.Column(db.Integer, db.ForeignKey("question.id"))
+
+    answer_text = db.Column(db.Text)
+    question = db.relationship("Question")
+
+    marks = db.Column(db.Integer, default=0)  

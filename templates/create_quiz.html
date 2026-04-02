@@ -10,45 +10,65 @@
 
 <div class="card shadow-lg p-4">
 
-<h3 class="text-center mb-4">Create Quiz</h3>
+<!-- HEADER -->
+
+<div class="text-center mb-4">
+<h3 class="mb-1">Create Quiz</h3>
+<p class="text-muted small">Add questions and build your quiz</p>
+</div>
 
 <form method="POST">
 
 <!-- TITLE -->
 
-<div class="mb-3">
-<label class="form-label">Quiz Title</label>
-<input type="text" name="title" class="form-control" placeholder="Enter quiz title" required>
+<div class="mb-4">
+<label class="form-label fw-semibold">Quiz Title</label>
+<input type="text" name="title" class="form-control form-control-lg"
+placeholder="Enter quiz title" required>
 </div>
 
 <hr>
 
 <!-- QUESTIONS -->
 
-<h5 class="mb-3">Questions</h5>
+<div class="d-flex justify-content-between align-items-center mb-3">
+
+<h5 class="mb-0">Questions</h5>
+
+<button type="button" onclick="addQuestion()"
+class="btn btn-sm btn-outline-primary">
++ Add Question
+</button>
+
+</div>
 
 <div id="questions">
 
-<div class="question-block mb-3">
+<!-- QUESTION TEMPLATE -->
 
-<label class="form-label">Question 1</label>
+<div class="question-block mb-3 p-3">
+
+<div class="d-flex justify-content-between align-items-center mb-2">
+
+<label class="form-label mb-0 fw-semibold">Question 1</label>
+
+<button type="button" class="btn btn-sm btn-outline-danger"
+onclick="removeQuestion(this)">
+Remove
+</button>
+
+</div>
 
 <textarea name="questions[]" class="form-control"
-rows="3" placeholder="Enter question"></textarea>
+rows="3" placeholder="Enter your question..."></textarea>
 
 </div>
 
 </div>
-
-<!-- ADD BUTTON -->
-
-<button type="button" onclick="addQuestion()" class="btn btn-outline-primary mb-3">
-Add Question
-</button>
 
 <!-- SUBMIT -->
 
-<div class="d-grid">
+<div class="d-grid mt-4">
 <button type="submit" class="btn btn-primary btn-lg">
 Create Quiz
 </button>
@@ -75,15 +95,37 @@ let container = document.getElementById("questions");
 let count = container.children.length + 1;
 
 let newField = document.createElement("div");
-newField.classList.add("question-block", "mb-3");
+newField.classList.add("question-block", "mb-3", "p-3");
 
 newField.innerHTML = `
-<label class="form-label">Question ${count}</label>
+<div class="d-flex justify-content-between align-items-center mb-2">
+<label class="form-label mb-0 fw-semibold">Question ${count}</label>
+<button type="button" class="btn btn-sm btn-outline-danger"
+onclick="removeQuestion(this)">
+Remove
+</button>
+</div>
 <textarea name="questions[]" class="form-control"
-rows="3" placeholder="Enter question"></textarea>
+rows="3" placeholder="Enter your question..."></textarea>
 `;
 
 container.appendChild(newField);
+
+}
+
+function removeQuestion(button) {
+button.closest(".question-block").remove();
+
+updateQuestionNumbers();
+}
+
+function updateQuestionNumbers() {
+
+let blocks = document.querySelectorAll(".question-block");
+
+blocks.forEach((block, index) => {
+block.querySelector("label").innerText = "Question " + (index + 1);
+});
 
 }
 
