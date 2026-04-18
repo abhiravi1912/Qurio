@@ -1,106 +1,55 @@
 {% extends "layout.html" %}
-
+{% block title %}Quizzes — QURIO{% endblock %}
 {% block content %}
-
-<div class="container mt-4">
-
-<!-- HEADER -->
-
-<div class="d-flex justify-content-between align-items-center mb-4">
-
-<div>
-<h3 class="mb-1">Quizzes</h3>
-<p class="text-muted small mb-0">Attempt quizzes or review submissions</p>
+<div class="section-header mt-3 fade-in-up">
+    <h3 class="section-title"><i class="bi bi-lightning-fill me-2" style="color:var(--warning)"></i>Quizzes</h3>
+    {% if current_user.role == 'faculty' %}
+    <a href="{{ url_for('main.create_quiz') }}" class="btn btn-gradient btn-sm">
+        <i class="bi bi-plus-circle me-1"></i> Create Quiz
+    </a>
+    {% endif %}
 </div>
-
-{% if current_user.role == "faculty" %}
-<a href="{{ url_for('main.create_quiz') }}"
-class="btn btn-primary">
-Create Quiz
-</a>
-{% endif %}
-
-</div>
-
-<!-- QUIZ GRID -->
-
 <div class="row">
-
-{% for quiz in quizzes %}
-
-<div class="col-md-4 mb-4">
-
-<div class="card shadow-sm h-100 quiz-card">
-
-<div class="card-body d-flex flex-column">
-
-<!-- TITLE -->
-
-<h5 class="card-title mb-2">
-{{ quiz.title }}
-</h5>
-
-<!-- DESCRIPTION -->
-
-<p class="text-muted small flex-grow-1">
-
-</p>
-
-<!-- ACTIONS -->
-
-<div class="mt-3 d-flex gap-2 flex-wrap">
-
-<a href="{{ url_for('main.take_quiz', quiz_id=quiz.id) }}"
-class="btn btn-primary btn-sm">
-Take Quiz
-</a>
-
-{% if current_user.role == "faculty" %}
-
-<a href="{{ url_for('main.view_submissions', quiz_id=quiz.id) }}"
-class="btn btn-outline-primary btn-sm">
-Submissions
-</a>
-
-{% endif %}
-
+    {% for quiz in quizzes %}
+    <div class="col-md-6 col-lg-4 mb-3 fade-in-up">
+        <div class="glass-card p-3 h-100">
+            <div class="d-flex align-items-center gap-2 mb-2">
+                <div class="stat-icon" style="width:40px;height:40px;border-radius:10px;background:rgba(245,158,11,0.15);display:flex;align-items:center;justify-content:center">
+                    <i class="bi bi-lightning-fill" style="color:var(--warning)"></i>
+                </div>
+                <div>
+                    <h6 class="fw-bold mb-0">{{ quiz.title }}</h6>
+                    <small class="text-muted">{{ quiz.questions|length }} question{{ 's' if quiz.questions|length != 1 }}</small>
+                </div>
+            </div>
+            {% if quiz.description %}
+            <p class="text-muted mb-3" style="font-size:0.88rem">{{ quiz.description[:80] }}{% if quiz.description|length > 80 %}...{% endif %}</p>
+            {% endif %}
+            <div class="d-flex justify-content-between align-items-center mt-auto">
+                <small class="text-muted">
+                    <i class="bi bi-person me-1"></i>{{ quiz.faculty.username if quiz.faculty else 'Unknown' }}
+                </small>
+                <div class="d-flex gap-2">
+                    {% if current_user.role == 'faculty' %}
+                    <a href="{{ url_for('main.view_submissions', quiz_id=quiz.id) }}" class="btn btn-glass btn-sm">
+                        <i class="bi bi-people me-1"></i>{{ quiz.submissions|length }}
+                    </a>
+                    {% endif %}
+                    <a href="{{ url_for('main.take_quiz', quiz_id=quiz.id) }}" class="btn btn-outline-accent btn-sm">
+                        {% if current_user.role|lower == 'student' %}Take{% else %}View{% endif %}
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% else %}
+    <div class="col-12">
+        <div class="glass-card empty-state fade-in-up">
+            <div class="empty-icon"><i class="bi bi-lightning"></i></div>
+            <h5>No quizzes available</h5>
+            <p>{% if current_user.role == 'faculty' %}Create your first quiz!{% else %}Your faculty will post quizzes here.{% endif %}</p>
+        </div>
+    </div>
+    {% endfor %}
 </div>
-
-</div>
-
-</div>
-
-</div>
-
-{% else %}
-
-<!-- EMPTY STATE -->
-
-<div class="text-center p-5">
-
-<h5 class="text-muted">No quizzes available</h5>
-
-<p class="text-muted">
-{% if current_user.role == "faculty" %}
-Create your first quiz to get started.
-{% else %}
-No quizzes have been published yet.
-{% endif %}
-</p>
-
-{% if current_user.role == "faculty" %}
-<a href="{{ url_for('main.create_quiz') }}"
-class="btn btn-primary mt-2">
-Create Quiz
-</a>
-{% endif %}
-
-</div>
-
-{% endfor %}
-
-</div>
-
-</div>
-
 {% endblock %}

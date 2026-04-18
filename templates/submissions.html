@@ -1,127 +1,63 @@
 {% extends "layout.html" %}
-
+{% block title %}{{ quiz.title }} — Submissions — QURIO{% endblock %}
 {% block content %}
+<div class="row justify-content-center mt-3">
+    <div class="col-lg-9">
+        <div class="section-header fade-in-up">
+            <h3 class="section-title"><i class="bi bi-people-fill me-2" style="color:var(--accent-1)"></i>Submissions — {{ quiz.title }}</h3>
+            <span class="badge-category">{{ submissions|length }} total</span>
+        </div>
 
-<div class="container mt-4">
-
-<!-- HEADER -->
-
-<div class="d-flex justify-content-between align-items-center mb-4">
-
-<h3 class="mb-0">Submissions</h3>
-
-<span class="badge bg-primary">
-{% if submissions %}
-Quiz ID: {{ submissions[0].quiz_id }}
-{% else %}
-No Quiz
-{% endif %}
-</span>
-
+        {% if submissions %}
+        <form method="POST">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            {% for sub in submissions %}
+            <div class="glass-card p-4 mb-3 fade-in-up">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div class="d-flex align-items-center gap-2">
+                        <span class="avatar" style="width:36px;height:36px;font-size:0.8rem;background:{{ sub.user.avatar_color if sub.user else '#667eea' }}">
+                            {{ sub.user.username[0]|upper if sub.user else '?' }}
+                        </span>
+                        <div>
+                            <strong>{{ sub.user.username if sub.user else 'Unknown' }}</strong>
+                            <div class="text-muted" style="font-size:0.8rem">{{ sub.submitted_at.strftime('%b %d, %Y') if sub.submitted_at else '' }}</div>
+                        </div>
+                    </div>
+                    <div class="text-end">
+                        <div class="fw-bold" style="font-size:1.3rem;color:var(--accent-1)">{{ sub.score }}</div>
+                        <small class="text-muted">total score</small>
+                    </div>
+                </div>
+                {% for ans in sub.answers %}
+                <div class="glass-card p-3 mb-2" style="border-left:3px solid var(--accent-1)">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div class="flex-grow-1">
+                            <strong class="d-block mb-1" style="font-size:0.85rem;color:var(--text-secondary)">
+                                Q: {{ ans.question.text if ans.question else 'N/A' }}
+                            </strong>
+                            <p class="mb-0" style="color:var(--text-primary)">{{ ans.answer_text }}</p>
+                        </div>
+                        <div class="ms-3" style="min-width:80px">
+                            <label class="form-label" style="font-size:0.75rem">Marks</label>
+                            <input type="number" name="marks_{{ ans.id }}" value="{{ ans.marks }}"
+                                   class="form-control form-control-sm" min="0" style="width:70px">
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% endfor %}
+            <button type="submit" class="btn btn-gradient w-100 py-2">
+                <i class="bi bi-check-circle me-1"></i> Save All Marks
+            </button>
+        </form>
+        {% else %}
+        <div class="glass-card empty-state fade-in-up">
+            <div class="empty-icon"><i class="bi bi-inbox"></i></div>
+            <h5>No submissions yet</h5>
+            <p>Students haven't taken this quiz yet.</p>
+        </div>
+        {% endif %}
+    </div>
 </div>
-
-<form method="POST">
-
-{% if submissions %}
-
-{% for sub in submissions %}
-
-<div class="card shadow-sm mb-4 p-4">
-
-<!-- STUDENT HEADER -->
-
-<div class="d-flex justify-content-between align-items-center mb-3">
-
-<h5 class="mb-0">Student: {{ sub.user.username }}</h5>
-
-<span class=" bg-success">
-
-</span>
-
-</div>
-
-<hr>
-
-{% set ns = namespace(total=0) %}
-
-<!-- QUESTIONS + ANSWERS -->
-
-{% for ans in sub.answers %}
-
-<div class="mb-4">
-
-<p class="fw-semibold mb-1">
-Q{{ loop.index }}. {{ ans.question.text }}
-</p>
-
-<div class="answer-box mb-2">
-{{ ans.answer_text }}
-</div>
-
-<div class="d-flex align-items-center gap-2">
-
-<label class="text-muted small">Marks:</label>
-
-<input type="number"
-       name="marks_{{ ans.id }}"
-       value="{{ ans.marks or '' }}"
-       class="form-control form-control-sm"
-       style="width:100px">
-
-</div>
-
-</div>
-
-{% set ns.total = ns.total + (ans.marks or 0) %}
-
-{% endfor %}
-
-<hr>
-
-<!-- TOTAL -->
-
-<div class="d-flex justify-content-between align-items-center">
-
-<h6 class="mb-0">Calculated Total</h6>
-
-<span class="badge bg-primary px-3 py-2">
-{{ ns.total }}
-</span>
-
-</div>
-
-</div>
-
-{% endfor %}
-
-<!-- SAVE BUTTON -->
-
-<div class="text-end mt-4">
-
-<button class="btn btn-primary btn-lg px-4">
-Save Grades
-</button>
-
-</div>
-
-{% else %}
-
-<!-- EMPTY STATE -->
-
-<div class="text-center p-5 border rounded bg-light">
-
-<h5 class="text-muted">No submissions yet</h5>
-
-<p class="text-muted">
-Students have not submitted this quiz.
-</p>
-
-</div>
-
-{% endif %}
-
-</form>
-
-</div>
-
 {% endblock %}

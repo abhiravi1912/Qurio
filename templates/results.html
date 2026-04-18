@@ -1,101 +1,44 @@
 {% extends "layout.html" %}
-
+{% block title %}My Results — QURIO{% endblock %}
 {% block content %}
-
-<div class="container mt-4">
-
-<!-- HEADER -->
-
-<div class="d-flex justify-content-between align-items-center mb-4">
-
-<h3 class="mb-0">My Results</h3>
-
-<span class="text-muted small">
-View your quiz performance
-</span>
-
+<div class="row justify-content-center mt-3">
+    <div class="col-lg-8">
+        <h3 class="section-title mb-4 fade-in-up"><i class="bi bi-bar-chart-fill me-2" style="color:var(--accent-1)"></i>My Results</h3>
+        {% if submissions %}
+        {% for sub in submissions %}
+        <div class="glass-card p-4 mb-3 fade-in-up">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <div>
+                    <h5 class="fw-bold mb-1">{{ sub.quiz.title if sub.quiz else 'Quiz' }}</h5>
+                    <small class="text-muted"><i class="bi bi-clock me-1"></i>{{ sub.submitted_at.strftime('%b %d, %Y') if sub.submitted_at else '' }}</small>
+                </div>
+                <div class="text-end">
+                    <div class="fw-bold" style="font-size:2rem;color:var(--accent-1)">{{ sub.score }}</div>
+                    <small class="text-muted">points</small>
+                </div>
+            </div>
+            <div class="section-divider"></div>
+            {% for ans in sub.answers %}
+            <div class="d-flex justify-content-between align-items-start py-2" style="border-bottom:1px solid var(--glass-border)">
+                <div>
+                    <small class="text-muted">{{ ans.question.text if ans.question else '' }}</small>
+                    <p class="mb-0 mt-1">{{ ans.answer_text }}</p>
+                </div>
+                <span class="badge-category" style="{% if ans.marks > 0 %}background:rgba(16,185,129,0.15);color:var(--success);border-color:rgba(16,185,129,0.25){% endif %}">
+                    {{ ans.marks }} marks
+                </span>
+            </div>
+            {% endfor %}
+        </div>
+        {% endfor %}
+        {% else %}
+        <div class="glass-card empty-state fade-in-up">
+            <div class="empty-icon"><i class="bi bi-clipboard-x"></i></div>
+            <h5>No results yet</h5>
+            <p>Take a quiz to see your results here.</p>
+            <a href="{{ url_for('main.view_quizzes') }}" class="btn btn-gradient"><i class="bi bi-lightning me-1"></i> Browse Quizzes</a>
+        </div>
+        {% endif %}
+    </div>
 </div>
-
-{% if submissions %}
-
-{% for sub in submissions %}
-
-<div class="card shadow-sm mb-4 p-4">
-
-<!-- QUIZ HEADER -->
-
-<div class="d-flex justify-content-between align-items-center mb-3">
-
-<h5 class="mb-0">Quiz ID: {{ sub.quiz_id }}</h5>
-
-<span class="badge bg-primary">
-Result
-</span>
-
-</div>
-
-<hr>
-
-{% set ns = namespace(total=0) %}
-
-<!-- QUESTIONS -->
-
-{% for ans in sub.answers %}
-
-<div class="mb-3">
-
-<p class="fw-semibold mb-1">
-Q{{ loop.index }}. {{ ans.question.text }}
-</p>
-
-<div class="answer-box mb-1">
-{{ ans.answer_text }}
-</div>
-
-<p class="text-muted small mb-0">
-Marks: <strong>{{ ans.marks or 0 }}</strong>
-</p>
-
-</div>
-
-{% set ns.total = ns.total + (ans.marks or 0) %}
-
-{% endfor %}
-
-<hr>
-
-<!-- TOTAL SCORE -->
-
-<div class="d-flex justify-content-between align-items-center">
-
-<h5 class="mb-0">Total Score</h5>
-
-<span class="badge bg-success fs-6 px-3 py-2">
-{{ ns.total }}
-</span>
-
-</div>
-
-</div>
-
-{% endfor %}
-
-{% else %}
-
-<!-- EMPTY STATE -->
-
-<div class="text-center p-5 border rounded bg-light">
-
-<h5 class="text-muted">No results yet</h5>
-
-<p class="text-muted">
-You haven't submitted any quizzes yet.
-</p>
-
-</div>
-
-{% endif %}
-
-</div>
-
 {% endblock %}

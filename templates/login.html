@@ -1,50 +1,35 @@
 {% extends "layout.html" %}
-
+{% block title %}Sign In — QURIO{% endblock %}
 {% block content %}
-
-<div class="container mt-5">
-
-<div class="row justify-content-center">
-
-<div class="col-md-5">
-
-<div class="card shadow-lg p-4">
-
-<h3 class="text-center mb-4">Login to QURIO</h3>
-
-<form method="POST">
-
-{{ form.hidden_tag() }}
-
-<div class="mb-3">
-<label class="form-label">{{ form.email.label }}</label>
-{{ form.email(class="form-control") }}
+<div class="row justify-content-center mt-5">
+    <div class="col-md-5 col-lg-4">
+        <div class="glass-card p-4 fade-in-up">
+            <div class="text-center mb-4">
+                <div class="avatar avatar-lg mx-auto mb-3" style="background:var(--accent-gradient)">
+                    <i class="bi bi-person-fill"></i>
+                </div>
+                <h3 class="fw-bold">Welcome Back</h3>
+                <p class="text-muted">Sign in to continue to Qurio</p>
+            </div>
+            <form method="POST">
+                {{ form.hidden_tag() }}
+                <div class="mb-3">
+                    <label class="form-label">{{ form.email.label.text }}</label>
+                    {{ form.email(class="form-control", placeholder="you@email.com") }}
+                </div>
+                <div class="mb-4">
+                    <label class="form-label">{{ form.password.label.text }}</label>
+                    {{ form.password(class="form-control", placeholder="••••••••") }}
+                </div>
+                <button type="submit" class="btn btn-gradient w-100 py-2">
+                    <i class="bi bi-box-arrow-in-right me-1"></i> Sign In
+                </button>
+            </form>
+            <p class="text-center text-muted mt-3 mb-0" style="font-size:0.9rem">
+                Don't have an account?
+                <a href="{{ url_for('main.register') }}">Create one</a>
+            </p>
+        </div>
+    </div>
 </div>
-
-<div class="mb-3">
-<label class="form-label">{{ form.password.label }}</label>
-{{ form.password(class="form-control") }}
-</div>
-
-<div class="d-grid">
-{{ form.submit(class="btn btn-primary btn-lg") }}
-</div>
-
-</form>
-
-<hr>
-
-<p class="text-center mt-3 mb-0">
-Don't have an account?
-<a href="{{ url_for('main.register') }}">Register</a>
-</p>
-
-</div>
-
-</div>
-
-</div>
-
-</div>
-
 {% endblock %}

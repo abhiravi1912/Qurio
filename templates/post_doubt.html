@@ -1,52 +1,33 @@
 {% extends "layout.html" %}
-
+{% block title %}Post a Doubt — QURIO{% endblock %}
 {% block content %}
-
-<div class="container mt-5">
-
-<div class="row justify-content-center">
-
-<div class="col-md-7">
-
-<div class="card shadow-lg p-4">
-
-<h3 class="mb-4 text-center">Post a Doubt</h3>
-
-<form method="POST">
-
-{{ form.hidden_tag() }}
-
-<!-- Title -->
-<div class="mb-3">
-<label class="form-label">{{ form.title.label }}</label>
-{{ form.title(class="form-control") }}
+<div class="row justify-content-center mt-4">
+    <div class="col-md-8 col-lg-6">
+        <div class="glass-card p-4 fade-in-up">
+            <div class="section-header mb-4">
+                <h3 class="section-title"><i class="bi bi-patch-question-fill me-2" style="color:var(--accent-1)"></i>Ask a Doubt</h3>
+            </div>
+            <form method="POST">
+                {{ form.hidden_tag() }}
+                <div class="mb-3">
+                    <label class="form-label">{{ form.title.label.text }}</label>
+                    {{ form.title(class="form-control", placeholder="What's your question?") }}
+                    {% for error in form.title.errors %}<small class="text-danger">{{ error }}</small>{% endfor %}
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">{{ form.category.label.text }}</label>
+                    {{ form.category(class="form-select") }}
+                </div>
+                <div class="mb-4">
+                    <label class="form-label">{{ form.description.label.text }}</label>
+                    {{ form.description(class="form-control", rows=6, placeholder="Describe your doubt in detail...") }}
+                    {% for error in form.description.errors %}<small class="text-danger">{{ error }}</small>{% endfor %}
+                </div>
+                <button type="submit" class="btn btn-gradient w-100 py-2">
+                    <i class="bi bi-send-fill me-1"></i> Post Doubt
+                </button>
+            </form>
+        </div>
+    </div>
 </div>
-
-<!-- Description -->
-<div class="mb-3">
-<label class="form-label">{{ form.description.label }}</label>
-{{ form.description(class="form-control", rows=5) }}
-</div>
-
-<!-- Category -->
-<div class="mb-3">
-<label class="form-label">{{ form.category.label }}</label>
-{{ form.category(class="form-select") }}
-</div>
-
-<!-- Submit -->
-<div class="d-grid">
-{{ form.submit(class="btn btn-primary btn-lg") }}
-</div>
-
-</form>
-
-</div>
-
-</div>
-
-</div>
-
-</div>
-
 {% endblock %}

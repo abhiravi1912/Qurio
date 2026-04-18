@@ -1,0 +1,88 @@
+{% extends "layout.html" %}
+{% block title %}Admin Panel — QURIO{% endblock %}
+{% block content %}
+<div class="mt-3">
+    <h3 class="section-title mb-4 fade-in-up"><i class="bi bi-shield-lock-fill me-2" style="color:var(--danger)"></i>Admin Panel</h3>
+
+    <!-- Stats -->
+    <div class="row g-3 mb-4">
+        {% for label, value, icon, color in [
+            ('Users', stats.total_users, 'bi-people-fill', 'var(--accent-1)'),
+            ('Students', stats.total_students, 'bi-mortarboard-fill', 'var(--accent-cyan)'),
+            ('Faculty', stats.total_faculty, 'bi-person-badge-fill', 'var(--success)'),
+            ('Doubts', stats.total_doubts, 'bi-chat-square-text-fill', 'var(--warning)'),
+            ('Open', stats.open_doubts, 'bi-exclamation-circle-fill', 'var(--danger)'),
+            ('Quizzes', stats.total_quizzes, 'bi-lightning-fill', 'var(--accent-1)'),
+            ('Notes', stats.total_notes, 'bi-journal-text', 'var(--success)')
+        ] %}
+        <div class="col-6 col-md-3 col-lg fade-in-up">
+            <div class="glass-card stat-card">
+                <div class="stat-icon" style="background:{{ color }}20"><i class="bi {{ icon }}" style="color:{{ color }}"></i></div>
+                <div class="stat-value">{{ value }}</div>
+                <div class="stat-title">{{ label }}</div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Users Table -->
+    <div class="glass-card fade-in-up" style="overflow-x:auto">
+        <table class="table table-glass mb-0">
+            <thead>
+                <tr>
+                    <th>User</th>
+                    <th>Email</th>
+                    <th>Role</th>
+                    <th>Points</th>
+                    <th>Admin</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for user in users %}
+                <tr>
+                    <td>
+                        <div class="d-flex align-items-center gap-2">
+                            <span class="avatar" style="width:30px;height:30px;font-size:0.7rem;background:{{ user.avatar_color }}">{{ user.username[0]|upper }}</span>
+                            <a href="{{ url_for('main.profile', username=user.username) }}" style="color:var(--text-primary)">{{ user.username }}</a>
+                        </div>
+                    </td>
+                    <td><small class="text-muted">{{ user.email }}</small></td>
+                    <td>
+                        <form method="POST" action="{{ url_for('main.change_role', user_id=user.id) }}" class="d-inline">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                            <select name="role" class="form-select form-select-sm" style="width:110px" onchange="this.form.submit()">
+                                <option value="student" {% if user.role == 'student' %}selected{% endif %}>Student</option>
+                                <option value="faculty" {% if user.role == 'faculty' %}selected{% endif %}>Faculty</option>
+                                <option value="admin" {% if user.role == 'admin' %}selected{% endif %}>Admin</option>
+                            </select>
+                        </form>
+                    </td>
+                    <td><strong style="color:var(--accent-1)">{{ user.points }}</strong></td>
+                    <td>
+                        <form method="POST" action="{{ url_for('main.toggle_admin', user_id=user.id) }}" class="d-inline">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                            <button type="submit" class="btn btn-sm {% if user.is_admin %}btn-warning{% else %}btn-glass{% endif %}"
+                                    {% if user.id == current_user.id %}disabled{% endif %}>
+                                <i class="bi {% if user.is_admin %}bi-shield-fill-check{% else %}bi-shield{% endif %}"></i>
+                            </button>
+                        </form>
+                    </td>
+                    <td>
+                        {% if user.id != current_user.id %}
+                        <form method="POST" action="{{ url_for('main.delete_user', user_id=user.id) }}" class="d-inline"
+                              onsubmit="return confirm('Delete {{ user.username }}?')">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                            <button type="submit" class="btn btn-sm btn-glass" style="color:var(--danger)">
+                                <i class="bi bi-trash"></i>
+                            </button>
+                        </form>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

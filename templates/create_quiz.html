@@ -1,134 +1,77 @@
 {% extends "layout.html" %}
-
+{% block title %}Create Quiz — QURIO{% endblock %}
 {% block content %}
-
-<div class="container mt-5">
-
-<div class="row justify-content-center">
-
-<div class="col-md-8">
-
-<div class="card shadow-lg p-4">
-
-<!-- HEADER -->
-
-<div class="text-center mb-4">
-<h3 class="mb-1">Create Quiz</h3>
-<p class="text-muted small">Add questions and build your quiz</p>
+<div class="row justify-content-center mt-4">
+    <div class="col-lg-8">
+        <div class="glass-card p-4 fade-in-up">
+            <h3 class="section-title mb-4"><i class="bi bi-plus-circle-fill me-2" style="color:var(--accent-1)"></i>Create Quiz</h3>
+            <form method="POST" id="quizForm">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <div class="mb-3">
+                    <label class="form-label">Quiz Title</label>
+                    <input type="text" name="title" class="form-control" placeholder="Enter quiz title" required>
+                </div>
+                <div class="mb-4">
+                    <label class="form-label">Description (optional)</label>
+                    <textarea name="description" class="form-control" rows="2" placeholder="Brief description..."></textarea>
+                </div>
+                <div class="section-divider"></div>
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h5 class="fw-bold mb-0">Questions</h5>
+                    <div class="d-flex gap-2">
+                        <button type="button" class="btn btn-glass btn-sm" onclick="addQuestion('text')">
+                            <i class="bi bi-fonts me-1"></i> Text Question
+                        </button>
+                        <button type="button" class="btn btn-outline-accent btn-sm" onclick="addQuestion('mcq')">
+                            <i class="bi bi-list-check me-1"></i> MCQ Question
+                        </button>
+                    </div>
+                </div>
+                <div id="questionsContainer"></div>
+                <button type="submit" class="btn btn-gradient w-100 py-2 mt-3">
+                    <i class="bi bi-check-circle me-1"></i> Create Quiz
+                </button>
+            </form>
+        </div>
+    </div>
 </div>
-
-<form method="POST">
-
-<!-- TITLE -->
-
-<div class="mb-4">
-<label class="form-label fw-semibold">Quiz Title</label>
-<input type="text" name="title" class="form-control form-control-lg"
-placeholder="Enter quiz title" required>
-</div>
-
-<hr>
-
-<!-- QUESTIONS -->
-
-<div class="d-flex justify-content-between align-items-center mb-3">
-
-<h5 class="mb-0">Questions</h5>
-
-<button type="button" onclick="addQuestion()"
-class="btn btn-sm btn-outline-primary">
-+ Add Question
-</button>
-
-</div>
-
-<div id="questions">
-
-<!-- QUESTION TEMPLATE -->
-
-<div class="question-block mb-3 p-3">
-
-<div class="d-flex justify-content-between align-items-center mb-2">
-
-<label class="form-label mb-0 fw-semibold">Question 1</label>
-
-<button type="button" class="btn btn-sm btn-outline-danger"
-onclick="removeQuestion(this)">
-Remove
-</button>
-
-</div>
-
-<textarea name="questions[]" class="form-control"
-rows="3" placeholder="Enter your question..."></textarea>
-
-</div>
-
-</div>
-
-<!-- SUBMIT -->
-
-<div class="d-grid mt-4">
-<button type="submit" class="btn btn-primary btn-lg">
-Create Quiz
-</button>
-</div>
-
-</form>
-
-</div>
-
-</div>
-
-</div>
-
-</div>
-
-<!-- SCRIPT -->
-
+{% endblock %}
+{% block scripts %}
 <script>
-
-function addQuestion() {
-
-let container = document.getElementById("questions");
-
-let count = container.children.length + 1;
-
-let newField = document.createElement("div");
-newField.classList.add("question-block", "mb-3", "p-3");
-
-newField.innerHTML = `
-<div class="d-flex justify-content-between align-items-center mb-2">
-<label class="form-label mb-0 fw-semibold">Question ${count}</label>
-<button type="button" class="btn btn-sm btn-outline-danger"
-onclick="removeQuestion(this)">
-Remove
-</button>
-</div>
-<textarea name="questions[]" class="form-control"
-rows="3" placeholder="Enter your question..."></textarea>
-`;
-
-container.appendChild(newField);
-
+let qCount = 0;
+function addQuestion(type) {
+    qCount++;
+    const container = document.getElementById('questionsContainer');
+    let html = `
+    <div class="glass-card question-block mb-3 fade-in-up" id="q${qCount}">
+        <div class="d-flex justify-content-between align-items-center mb-2">
+            <span><span class="question-number">${qCount}</span>
+            <strong>${type === 'mcq' ? 'Multiple Choice' : 'Text'} Question</strong></span>
+            <button type="button" class="btn btn-glass btn-sm" onclick="document.getElementById('q${qCount}').remove()" style="color:var(--danger)">
+                <i class="bi bi-trash"></i>
+            </button>
+        </div>
+        <input type="hidden" name="question_types[]" value="${type}">
+        <div class="mb-2">
+            <textarea name="questions[]" class="form-control" rows="2" placeholder="Enter question..." required></textarea>
+        </div>`;
+    if (type === 'mcq') {
+        html += `
+        <div class="row g-2 mb-2">
+            <div class="col-md-6"><input type="text" name="options_a[]" class="form-control" placeholder="Option A" required></div>
+            <div class="col-md-6"><input type="text" name="options_b[]" class="form-control" placeholder="Option B" required></div>
+            <div class="col-md-6"><input type="text" name="options_c[]" class="form-control" placeholder="Option C"></div>
+            <div class="col-md-6"><input type="text" name="options_d[]" class="form-control" placeholder="Option D"></div>
+        </div>
+        <div><input type="text" name="correct_answers[]" class="form-control" placeholder="Correct answer (e.g., Option A text)" required></div>`;
+    } else {
+        html += `<input type="hidden" name="options_a[]" value=""><input type="hidden" name="options_b[]" value="">
+        <input type="hidden" name="options_c[]" value=""><input type="hidden" name="options_d[]" value="">
+        <input type="hidden" name="correct_answers[]" value="">`;
+    }
+    html += `</div>`;
+    container.insertAdjacentHTML('beforeend', html);
 }
-
-function removeQuestion(button) {
-button.closest(".question-block").remove();
-
-updateQuestionNumbers();
-}
-
-function updateQuestionNumbers() {
-
-let blocks = document.querySelectorAll(".question-block");
-
-blocks.forEach((block, index) => {
-block.querySelector("label").innerText = "Question " + (index + 1);
-});
-
-}
-
+addQuestion('text');
 </script>
-
 {% endblock %}

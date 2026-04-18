@@ -1,0 +1,65 @@
+{% extends "layout.html" %}
+{% block title %}Leaderboard — QURIO{% endblock %}
+{% block content %}
+<div class="row justify-content-center mt-3">
+    <div class="col-lg-8">
+        <h3 class="section-title mb-4 fade-in-up">
+            <i class="bi bi-trophy-fill me-2" style="color:var(--warning)"></i>Leaderboard
+        </h3>
+
+        <!-- Top 3 Podium -->
+        {% if users|length >= 3 %}
+        <div class="row g-3 mb-4">
+            {% for i, medal_class, medal_icon in [(1, 'silver', '🥈'), (0, 'gold', '🥇'), (2, 'bronze', '🥉')] %}
+            {% if i < users|length %}
+            <div class="col-md-4 fade-in-up">
+                <div class="glass-card p-3 text-center {% if i == 0 %}border{% endif %}" {% if i == 0 %}style="border-color:rgba(251,191,36,0.3) !important"{% endif %}>
+                    <div style="font-size:2rem">{{ medal_icon }}</div>
+                    <div class="avatar avatar-lg mx-auto my-2" style="background:{{ users[i].avatar_color }}">
+                        {{ users[i].username[0]|upper }}
+                    </div>
+                    <h5 class="fw-bold mb-0">
+                        <a href="{{ url_for('main.profile', username=users[i].username) }}" style="color:var(--text-primary)">
+                            {{ users[i].username }}
+                        </a>
+                    </h5>
+                    <span class="badge-category my-1">{{ users[i].role|capitalize }}</span>
+                    <div class="fw-bold mt-1" style="font-size:1.5rem;color:var(--accent-1)">{{ users[i].points }}</div>
+                    <small class="text-muted">points</small>
+                </div>
+            </div>
+            {% endif %}
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        <!-- Full Rankings -->
+        <div class="glass-card fade-in-up" style="overflow:hidden">
+            {% for user in users %}
+            <div class="leaderboard-row">
+                <span class="rank-number {% if loop.index == 1 %}gold{% elif loop.index == 2 %}silver{% elif loop.index == 3 %}bronze{% else %}text-muted{% endif %}">
+                    {{ loop.index }}
+                </span>
+                <span class="avatar mx-3" style="width:36px;height:36px;font-size:0.8rem;background:{{ user.avatar_color }}">
+                    {{ user.username[0]|upper }}
+                </span>
+                <div class="flex-grow-1">
+                    <a href="{{ url_for('main.profile', username=user.username) }}" class="fw-semibold" style="color:var(--text-primary)">
+                        {{ user.username }}
+                    </a>
+                    <small class="text-muted d-block">{{ user.role|capitalize }}</small>
+                </div>
+                <div class="text-end">
+                    <strong style="color:var(--accent-1)">{{ user.points }}</strong>
+                    <small class="text-muted d-block">points</small>
+                </div>
+            </div>
+            {% else %}
+            <div class="empty-state">
+                <p class="text-muted">No users yet.</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}

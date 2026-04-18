@@ -1,119 +1,73 @@
 {% extends "layout.html" %}
-
+{% block title %}Register — QURIO{% endblock %}
 {% block content %}
-
-<div class="container mt-5">
-
-<div class="row justify-content-center">
-
-<div class="col-md-6">
-
-<div class="card shadow-lg p-4">
-
-<h3 class="text-center mb-4">Create an Account</h3>
-
-<form method="POST">
-
-{{ form.hidden_tag() }}
-
-<!-- Username -->
-
-<div class="mb-3">
-
-<label class="form-label">{{ form.username.label }}</label>
-
-{{ form.username(class="form-control") }}
-
+<div class="row justify-content-center mt-4">
+    <div class="col-md-6 col-lg-5">
+        <div class="glass-card p-4 fade-in-up">
+            <div class="text-center mb-4">
+                <div class="avatar avatar-lg mx-auto mb-3" style="background:var(--accent-gradient)">
+                    <i class="bi bi-person-plus-fill"></i>
+                </div>
+                <h3 class="fw-bold">Create Account</h3>
+                <p class="text-muted">Join Qurio and start learning</p>
+            </div>
+            <form method="POST">
+                {{ form.hidden_tag() }}
+                <div class="mb-3">
+                    <label class="form-label">{{ form.username.label.text }}</label>
+                    {{ form.username(class="form-control", placeholder="Choose a username") }}
+                    {% for error in form.username.errors %}<small class="text-danger">{{ error }}</small>{% endfor %}
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">{{ form.email.label.text }}</label>
+                    {{ form.email(class="form-control", placeholder="you@email.com") }}
+                    {% for error in form.email.errors %}<small class="text-danger">{{ error }}</small>{% endfor %}
+                </div>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">{{ form.password.label.text }}</label>
+                        {{ form.password(class="form-control", placeholder="Min. 6 characters") }}
+                        {% for error in form.password.errors %}<small class="text-danger">{{ error }}</small>{% endfor %}
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">{{ form.confirm_password.label.text }}</label>
+                        {{ form.confirm_password(class="form-control", placeholder="Repeat password") }}
+                        {% for error in form.confirm_password.errors %}<small class="text-danger">{{ error }}</small>{% endfor %}
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">{{ form.role.label.text }}</label>
+                    {{ form.role(class="form-select", id="roleSelect") }}
+                </div>
+                <div class="mb-4" id="facultyField" style="display:none;">
+                    <label class="form-label">{{ form.faculty.label.text }}</label>
+                    {{ form.faculty(class="form-select") }}
+                </div>
+                <div class="mb-4" id="adminCodeField" style="display:none;">
+                    <label class="form-label">{{ form.admin_code.label.text }}</label>
+                    {{ form.admin_code(class="form-control", placeholder="Enter secret admin key") }}
+                </div>
+                <button type="submit" class="btn btn-gradient w-100 py-2">
+                    <i class="bi bi-rocket-takeoff me-1"></i> Create Account
+                </button>
+            </form>
+            <p class="text-center text-muted mt-3 mb-0" style="font-size:0.9rem">
+                Already have an account? <a href="{{ url_for('main.login') }}">Sign in</a>
+            </p>
+        </div>
+    </div>
 </div>
-
-<!-- Email -->
-
-<div class="mb-3">
-
-<label class="form-label">{{ form.email.label }}</label>
-
-{{ form.email(class="form-control") }}
-
-{% for error in form.email.errors %}
-<div class="text-danger small">{{ error }}</div>
-{% endfor %}
-
-</div>
-
-<!-- Password -->
-
-<div class="mb-3">
-
-<label class="form-label">{{ form.password.label }}</label>
-
-{{ form.password(class="form-control") }}
-
-</div>
-
-<!-- Role -->
-
-<div class="mb-3">
-
-<label class="form-label">{{ form.role.label }}</label>
-
-{{ form.role(class="form-select", id="role") }}
-
-</div>
-
-<!-- Faculty select -->
-
-<div id="faculty-field" class="mb-3">
-
-<label class="form-label">{{ form.faculty.label }}</label>
-
-{{ form.faculty(class="form-select", id="faculty") }}
-
-</div>
-
-<!-- Submit -->
-
-<div class="d-grid">
-
-{{ form.submit(class="btn btn-primary btn-lg") }}
-
-</div>
-
-</form>
-
-</div>
-
-</div>
-
-</div>
-
-</div>
-
-
+{% endblock %}
+{% block scripts %}
 <script>
-
-function toggleFacultyField() {
-
-let role = document.getElementById("role").value;
-let facultyField = document.getElementById("faculty-field");
-
-if (role === "student") {
-facultyField.style.display = "block";
-} else {
-facultyField.style.display = "none";
-}
-
-}
-
-document.addEventListener("DOMContentLoaded", function(){
-
-let roleSelect = document.getElementById("role");
-
-toggleFacultyField();
-
-roleSelect.addEventListener("change", toggleFacultyField);
-
-});
-
+    const roleSelect = document.getElementById('roleSelect');
+    const facultyField = document.getElementById('facultyField');
+    const adminCodeField = document.getElementById('adminCodeField');
+    function toggleFields() {
+        facultyField.style.display = roleSelect.value === 'student' ? 'block' : 'none';
+        adminCodeField.style.display = roleSelect.value === 'admin' ? 'block' : 'none';
+    }
+    roleSelect.addEventListener('change', toggleFields);
+    toggleFields();
 </script>
-
 {% endblock %}

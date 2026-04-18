@@ -1,101 +1,153 @@
 {% extends "layout.html" %}
-
+{% block title %}{{ doubt.title }} — QURIO{% endblock %}
 {% block content %}
+<div class="row mt-3">
+    <!-- Main Content -->
+    <div class="col-lg-8">
+        <!-- Doubt Card -->
+        <div class="glass-card p-4 mb-4 fade-in-up">
+            <div class="d-flex gap-3">
+                <!-- Voting -->
+                <div class="vote-group">
+                    <form method="POST" action="{{ url_for('main.vote_doubt', doubt_id=doubt.id) }}">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        <input type="hidden" name="vote_type" value="up">
+                        <button type="submit" class="vote-btn {% if user_vote == 'up' %}active-up{% endif %}">
+                            <i class="bi bi-caret-up-fill"></i>
+                        </button>
+                    </form>
+                    <span class="vote-score">{{ doubt.score }}</span>
+                    <form method="POST" action="{{ url_for('main.vote_doubt', doubt_id=doubt.id) }}">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        <input type="hidden" name="vote_type" value="down">
+                        <button type="submit" class="vote-btn {% if user_vote == 'down' %}active-down{% endif %}">
+                            <i class="bi bi-caret-down-fill"></i>
+                        </button>
+                    </form>
+                </div>
 
-<div class="container mt-4">
+                <!-- Content -->
+                <div class="flex-grow-1">
+                    <div class="d-flex align-items-center gap-2 mb-2 flex-wrap">
+                        <span class="badge-category">{{ doubt.category }}</span>
+                        <span class="badge-status {{ doubt.status }}">{{ doubt.status }}</span>
+                    </div>
+                    <h3 class="fw-bold mb-3">{{ doubt.title }}</h3>
+                    <p style="color:var(--text-secondary);line-height:1.7">{{ doubt.description }}</p>
+                    <div class="d-flex align-items-center gap-3 mt-3 flex-wrap">
+                        <div class="d-flex align-items-center gap-2">
+                            <span class="avatar" style="width:30px;height:30px;font-size:0.7rem;background:{{ doubt.author.avatar_color }}">
+                                {{ doubt.author.username[0]|upper }}
+                            </span>
+                            <a href="{{ url_for('main.profile', username=doubt.author.username) }}" class="text-muted" style="font-size:0.9rem">
+                                {{ doubt.author.username }}
+                            </a>
+                        </div>
+                        <small class="text-muted"><i class="bi bi-clock me-1"></i>{{ doubt.created_at.strftime('%b %d, %Y at %I:%M %p') if doubt.created_at else 'N/A' }}</small>
+                        <small class="text-muted"><i class="bi bi-eye me-1"></i>{{ doubt.views }} views</small>
+                    </div>
+                </div>
+            </div>
 
-<!-- QUESTION CARD -->
+            {% if doubt.user_id == current_user.id or current_user.role == 'faculty' %}
+            <div class="mt-3 pt-3" style="border-top:1px solid var(--glass-border)">
+                <form method="POST" action="{{ url_for('main.resolve_doubt', doubt_id=doubt.id) }}" class="d-inline">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <button type="submit" class="btn btn-glass btn-sm">
+                        {% if doubt.status == 'open' %}
+                            <i class="bi bi-check-circle me-1"></i> Mark Resolved
+                        {% else %}
+                            <i class="bi bi-arrow-counterclockwise me-1"></i> Reopen
+                        {% endif %}
+                    </button>
+                </form>
+            </div>
+            {% endif %}
+        </div>
 
-<div class="card shadow-sm mb-4">
+        <!-- Answers -->
+        <div class="section-header fade-in-up">
+            <h5 class="section-title"><i class="bi bi-chat-square-text-fill me-2" style="color:var(--accent-cyan)"></i>{{ answers|length }} Answer{{ 's' if answers|length != 1 }}</h5>
+        </div>
 
-<div class="card-body">
+        {% for ans in answers %}
+        <div class="glass-card answer-card fade-in-up">
+            <div class="d-flex align-items-start gap-3">
+                <span class="avatar" style="background:{{ ans.responder.avatar_color }}">{{ ans.responder.username[0]|upper }}</span>
+                <div class="flex-grow-1">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <div>
+                            <a href="{{ url_for('main.profile', username=ans.responder.username) }}" class="fw-semibold" style="color:var(--text-primary)">
+                                {{ ans.responder.username }}
+                            </a>
+                            <span class="badge-category ms-2" style="font-size:0.7rem">{{ ans.responder.role }}</span>
+                        </div>
+                        <small class="text-muted">{{ ans.created_at.strftime('%b %d, %Y') if ans.created_at else '' }}</small>
+                    </div>
+                    <p style="color:var(--text-secondary);line-height:1.7;margin:0">{{ ans.content }}</p>
+                </div>
+            </div>
+        </div>
+        {% else %}
+        <div class="glass-card empty-state fade-in-up" style="padding:2rem">
+            <div class="empty-icon"><i class="bi bi-chat-square-dots"></i></div>
+            <h5>No answers yet</h5>
+            <p>Be the first to help with this doubt!</p>
+        </div>
+        {% endfor %}
 
-<h3 class="mb-3">{{ doubt.title }}</h3>
+        <!-- Answer Form (faculty only) -->
+        {% if current_user.role == 'faculty' %}
+        <div class="glass-card p-4 mt-3 fade-in-up">
+            <h5 class="fw-bold mb-3"><i class="bi bi-pencil-square me-2" style="color:var(--success)"></i>Your Answer</h5>
+            <form method="POST">
+                {{ form.hidden_tag() }}
+                <div class="mb-3">
+                    {{ form.content(class="form-control", rows=5, placeholder="Write your answer here...") }}
+                </div>
+                <button type="submit" class="btn btn-gradient">
+                    <i class="bi bi-send-fill me-1"></i> Post Answer
+                </button>
+            </form>
+        </div>
+        {% endif %}
+    </div>
 
-<p class="text-muted">
-Category: <span class="badge bg-secondary">{{ doubt.category }}</span>
-</p>
-
-<p class="mt-3">
-{{ doubt.description }}
-</p>
-
-<small class="text-muted">
-Posted by {{ doubt.author.username }} on {{ doubt.created_at }}
-</small>
-
+    <!-- Sidebar -->
+    <div class="col-lg-4">
+        <div class="glass-card p-3 mb-3 fade-in-up">
+            <h6 class="fw-bold mb-3"><i class="bi bi-info-circle-fill me-2" style="color:var(--accent-1)"></i>Doubt Info</h6>
+            <div class="d-flex justify-content-between mb-2">
+                <small class="text-muted">Status</small>
+                <span class="badge-status {{ doubt.status }}">{{ doubt.status }}</span>
+            </div>
+            <div class="d-flex justify-content-between mb-2">
+                <small class="text-muted">Category</small>
+                <span class="badge-category">{{ doubt.category }}</span>
+            </div>
+            <div class="d-flex justify-content-between mb-2">
+                <small class="text-muted">Answers</small>
+                <strong>{{ answers|length }}</strong>
+            </div>
+            <div class="d-flex justify-content-between mb-2">
+                <small class="text-muted">Views</small>
+                <strong>{{ doubt.views }}</strong>
+            </div>
+            <div class="d-flex justify-content-between">
+                <small class="text-muted">Score</small>
+                <strong style="color:var(--accent-1)">{{ doubt.score }}</strong>
+            </div>
+        </div>
+        <div class="glass-card p-3 fade-in-up">
+            <h6 class="fw-bold mb-3"><i class="bi bi-person-fill me-2" style="color:var(--accent-cyan)"></i>Asked by</h6>
+            <div class="d-flex align-items-center gap-2">
+                <span class="avatar" style="background:{{ doubt.author.avatar_color }}">{{ doubt.author.username[0]|upper }}</span>
+                <div>
+                    <a href="{{ url_for('main.profile', username=doubt.author.username) }}" class="fw-semibold" style="color:var(--text-primary)">{{ doubt.author.username }}</a>
+                    <div class="text-muted" style="font-size:0.8rem"><i class="bi bi-star-fill me-1" style="color:var(--warning);font-size:0.7rem"></i>{{ doubt.author.points }} points</div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
-
-</div>
-
-
-<!-- ANSWERS SECTION -->
-
-<h4 class="mb-3">Answers</h4>
-
-{% if answers %}
-
-{% for answer in answers %}
-
-<div class="card mb-3 shadow-sm">
-
-<div class="card-body">
-
-<p class="mb-2">
-{{ answer.content }}
-</p>
-
-<small class="text-muted">
-Answered by <strong>{{ answer.user.username }}</strong>
-</small>
-
-</div>
-
-</div>
-
-{% endfor %}
-
-{% else %}
-
-<div class="alert alert-secondary">
-No answers yet. Faculty can answer this doubt.
-</div>
-
-{% endif %}
-
-
-<!-- FACULTY ANSWER FORM -->
-
-{% if current_user.role == "faculty" and doubt.author.faculty_id == current_user.id %}
-
-<div class="card mt-4 shadow-sm">
-
-<div class="card-body">
-
-<h5 class="mb-3">Post Your Answer</h5>
-
-<form method="POST">
-
-{{ form.hidden_tag() }}
-
-<div class="mb-3">
-
-<label class="form-label">{{ form.content.label }}</label>
-
-{{ form.content(class="form-control", rows=4) }}
-
-</div>
-
-{{ form.submit(class="btn btn-primary") }}
-
-</form>
-
-</div>
-
-</div>
-
-{% endif %}
-
-</div>
-
 {% endblock %}

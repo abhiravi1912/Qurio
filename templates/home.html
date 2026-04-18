@@ -1,162 +1,114 @@
 {% extends "layout.html" %}
+{% block title %}QURIO — Ask, Learn, Grow{% endblock %}
 
 {% block content %}
-
-<div class="container mt-4">
-
-<!-- HERO SECTION -->
-
-<div class="hero-section text-center p-5 mb-5 rounded shadow-sm">
-
-<h1 class="display-4 fw-bold">
-🚀 Welcome to QURIO
-</h1>
-
-<p class="lead text-muted">
-Ask doubts, get answers from faculty, and collaborate with classmates.
-</p>
-
-<div class="mt-4">
-
-<a href="{{ url_for('main.post_doubt') }}" class="btn btn-primary btn-lg me-2">
-Ask a Doubt
-</a>
-
-<a href="{{ url_for('main.notes') }}" class="btn btn-outline-dark btn-lg">
-Browse Notes
-</a>
-
+<div class="hero-section glass-card fade-in-up">
+    <h1 class="hero-title">Ask. Learn. Grow.</h1>
+    <p class="hero-subtitle">
+        Your academic doubt resolution hub. Post questions, get answers from faculty, take quizzes, and climb the leaderboard.
+    </p>
+    <div class="d-flex justify-content-center gap-3 flex-wrap">
+        <a href="{{ url_for('main.post_doubt') }}" class="btn btn-gradient btn-lg">
+            <i class="bi bi-plus-circle me-1"></i> Ask a Doubt
+        </a>
+        <a href="{{ url_for('main.notes') }}" class="btn btn-glass btn-lg">
+            <i class="bi bi-journal-text me-1"></i> Browse Notes
+        </a>
+    </div>
 </div>
 
+<!-- Search -->
+<div class="search-container fade-in-up">
+    <form method="GET" action="{{ url_for('main.home') }}">
+        <i class="bi bi-search search-icon"></i>
+        <input type="text" name="q" class="form-control" placeholder="Search doubts..."
+               value="{{ current_query }}">
+        <button class="btn btn-gradient btn-sm" type="submit">Search</button>
+        {% if current_category %}<input type="hidden" name="category" value="{{ current_category }}">{% endif %}
+        {% if current_status %}<input type="hidden" name="status" value="{{ current_status }}">{% endif %}
+    </form>
 </div>
 
-
-<!-- SEARCH BAR -->
-
-<div class="card shadow-sm p-3 mb-4">
-
-<form method="GET">
-
-<div class="input-group">
-
-<span class="input-group-text">🔎</span>
-
-<input
-type="text"
-name="q"
-placeholder="Search doubts..."
-class="form-control form-control-lg">
-
-<button class="btn btn-primary px-4">
-Search
-</button>
-
+<!-- Filter Chips -->
+<div class="d-flex justify-content-between align-items-start flex-wrap gap-3 mb-4 fade-in-up">
+    <div>
+        <div class="filter-chips">
+            <a href="{{ url_for('main.home', q=current_query, status=current_status) }}"
+               class="filter-chip {% if not current_category %}active{% endif %}">All</a>
+            {% for cat in categories %}
+            <a href="{{ url_for('main.home', category=cat, q=current_query, status=current_status) }}"
+               class="filter-chip {% if current_category == cat %}active{% endif %}">{{ cat }}</a>
+            {% endfor %}
+        </div>
+        <div class="filter-chips">
+            <a href="{{ url_for('main.home', q=current_query, category=current_category) }}"
+               class="filter-chip {% if not current_status %}active{% endif %}">All Status</a>
+            <a href="{{ url_for('main.home', status='open', q=current_query, category=current_category) }}"
+               class="filter-chip {% if current_status == 'open' %}active{% endif %}">
+                <i class="bi bi-circle-fill me-1" style="font-size:0.5rem;color:var(--warning)"></i>Open</a>
+            <a href="{{ url_for('main.home', status='resolved', q=current_query, category=current_category) }}"
+               class="filter-chip {% if current_status == 'resolved' %}active{% endif %}">
+                <i class="bi bi-check-circle-fill me-1" style="font-size:0.7rem;color:var(--success)"></i>Resolved</a>
+        </div>
+    </div>
+    <div class="d-flex gap-2">
+        <a href="{{ url_for('main.home', sort='newest', q=current_query, category=current_category, status=current_status) }}"
+           class="btn btn-glass btn-sm {% if current_sort == 'newest' %}active{% endif %}">
+            <i class="bi bi-sort-down me-1"></i>Newest</a>
+        <a href="{{ url_for('main.home', sort='oldest', q=current_query, category=current_category, status=current_status) }}"
+           class="btn btn-glass btn-sm {% if current_sort == 'oldest' %}active{% endif %}">
+            <i class="bi bi-sort-up me-1"></i>Oldest</a>
+    </div>
 </div>
 
-</form>
-
-</div>
-
-
-<!-- FILTER + POST BUTTON -->
-
-<div class="d-flex justify-content-between align-items-center mb-3 flex-wrap">
-
-<div>
-
-<strong class="me-2">Filter by Category:</strong>
-
-<a class="btn btn-outline-secondary btn-sm me-1" href="/">All</a>
-<a class="btn btn-outline-primary btn-sm me-1" href="/category/Math">Math</a>
-<a class="btn btn-outline-primary btn-sm me-1" href="/category/Physics">Physics</a>
-<a class="btn btn-outline-primary btn-sm me-1" href="/category/Computer Science">CS</a>
-
-</div>
-
-
-</div>
-
-<hr>
-
-
-<!-- DOUBT LIST -->
-
+<!-- Doubt List -->
 {% for doubt in doubts %}
+<div class="glass-card doubt-card fade-in-up">
+    <div class="doubt-stats">
+        <div class="stat-box">
+            <div class="stat-number">{{ doubt.score }}</div>
+            <div class="stat-label">votes</div>
+        </div>
+        <div class="stat-box">
+            <div class="stat-number" style="color:var(--accent-cyan)">{{ doubt.answers|length }}</div>
+            <div class="stat-label">answers</div>
+        </div>
+        <div class="stat-box">
+            <div class="stat-number" style="color:var(--text-muted);font-size:0.9rem">{{ doubt.views }}</div>
+            <div class="stat-label">views</div>
+        </div>
+    </div>
 
-<div class="card mb-3 shadow-sm border-0">
-
-<div class="card-body">
-
-<div class="row align-items-center">
-
-<!-- ANSWER COUNT -->
-
-<div class="col-md-2 text-center border-end">
-
-<h4 class="text-primary mb-0">
-{{ Answer.query.filter_by(doubt_id=doubt.id).count() }}
-</h4>
-
-<small class="text-muted">Answers</small>
-
+    <div class="doubt-content">
+        <h5>
+            <a href="{{ url_for('main.doubt_detail', doubt_id=doubt.id) }}">
+                {{ doubt.title }}
+            </a>
+        </h5>
+        <div class="description-preview">
+            {{ doubt.description }}
+        </div>
+        <div class="doubt-meta">
+            <span class="badge-category">{{ doubt.category }}</span>
+            <span class="badge-status {{ doubt.status }}">{{ doubt.status }}</span>
+            <small class="text-muted">
+                <i class="bi bi-person-fill me-1"></i>{{ doubt.author.username }}
+            </small>
+            <small class="text-muted">
+                <i class="bi bi-clock me-1"></i>{{ doubt.created_at.strftime('%b %d, %Y') if doubt.created_at else 'N/A' }}
+            </small>
+        </div>
+    </div>
 </div>
-
-
-<!-- DOUBT CONTENT -->
-
-<div class="col-md-10">
-
-<h5 class="mb-1">
-
-<a href="/doubt/{{ doubt.id }}" class="text-decoration-none fw-semibold">
-
-<span class="badge bg-secondary me-2">
-{{ doubt.category }}
-</span>
-
-{{ doubt.title }}
-
-</a>
-
-</h5>
-
-<p class="text-muted mb-1">
-{{ doubt.description }}
-</p>
-
-<small class="text-secondary">
-Posted on {{ doubt.created_at }}
-</small>
-
-</div>
-
-</div>
-
-</div>
-
-</div>
-
 {% else %}
-
-<!-- EMPTY STATE -->
-
-<div class="text-center p-5 border rounded bg-light">
-
-<h5 class="text-muted">No doubts posted yet</h5>
-
-<p class="text-muted">
-Be the first student to ask a question.
-</p>
-
-<a class="btn btn-success mt-2"
-href="{{ url_for('main.post_doubt') }}">
-Post the First Doubt
-</a>
-
+<div class="glass-card empty-state fade-in-up">
+    <div class="empty-icon"><i class="bi bi-chat-square-text"></i></div>
+    <h5>No doubts posted yet</h5>
+    <p>Be the first student to ask a question and start the conversation.</p>
+    <a class="btn btn-gradient" href="{{ url_for('main.post_doubt') }}">
+        <i class="bi bi-plus-circle me-1"></i> Post the First Doubt
+    </a>
 </div>
-
 {% endfor %}
-
-</div>
 
 {% endblock %}

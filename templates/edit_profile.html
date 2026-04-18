@@ -1,0 +1,48 @@
+{% extends "layout.html" %}
+{% block title %}Edit Profile — QURIO{% endblock %}
+{% block content %}
+<div class="row justify-content-center mt-4">
+    <div class="col-md-6 col-lg-5">
+        <div class="glass-card p-4 fade-in-up">
+            <h3 class="section-title mb-4"><i class="bi bi-pencil-square me-2" style="color:var(--accent-1)"></i>Edit Profile</h3>
+            <form method="POST">
+                {{ form.hidden_tag() }}
+                <div class="text-center mb-4">
+                    <div class="avatar avatar-xl mx-auto mb-2" id="previewAvatar" style="background:{{ form.avatar_color.data or current_user.avatar_color }}">
+                        {{ current_user.username[0]|upper }}
+                    </div>
+                    <div class="color-options justify-content-center mt-2">
+                        {% for color in ['#667eea', '#764ba2', '#06b6d4', '#10b981', '#f59e0b', '#ef4444', '#ec4899', '#8b5cf6', '#3b82f6', '#14b8a6'] %}
+                        <div class="color-swatch d-inline-block {% if (form.avatar_color.data or current_user.avatar_color) == color %}selected{% endif %}"
+                             style="background:{{ color }}" onclick="selectColor('{{ color }}')"></div>
+                        {% endfor %}
+                    </div>
+                    <input type="hidden" name="avatar_color" id="avatarColorInput" value="{{ form.avatar_color.data or current_user.avatar_color }}">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Username</label>
+                    {{ form.username(class="form-control") }}
+                    {% for error in form.username.errors %}<small class="text-danger">{{ error }}</small>{% endfor %}
+                </div>
+                <div class="mb-4">
+                    <label class="form-label">Bio</label>
+                    {{ form.bio(class="form-control", rows=3, placeholder="Tell us about yourself...") }}
+                </div>
+                <button type="submit" class="btn btn-gradient w-100 py-2">
+                    <i class="bi bi-check-circle me-1"></i> Save Changes
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+{% block scripts %}
+<script>
+function selectColor(color) {
+    document.getElementById('avatarColorInput').value = color;
+    document.getElementById('previewAvatar').style.background = color;
+    document.querySelectorAll('.color-swatch').forEach(el => el.classList.remove('selected'));
+    event.target.classList.add('selected');
+}
+</script>
+{% endblock %}

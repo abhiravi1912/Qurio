@@ -1,88 +1,30 @@
 {% extends "layout.html" %}
-
+{% block title %}{{ quiz.title }} — QURIO{% endblock %}
 {% block content %}
-
-<div class="container mt-4">
-
-<!-- QUIZ HEADER -->
-
-<div class="card shadow-sm p-4 mb-4">
-
-<div class="d-flex justify-content-between align-items-center">
-
-<div>
-<h2 class="mb-1">{{ quiz.title }}</h2>
-<p class="text-muted mb-0">
-Total Questions: {{ questions|length }}
-</p>
+<div class="row justify-content-center mt-3">
+    <div class="col-lg-8">
+        <div class="glass-card p-4 mb-4 fade-in-up">
+            <h3 class="fw-bold">{{ quiz.title }}</h3>
+            {% if quiz.description %}<p class="text-muted">{{ quiz.description }}</p>{% endif %}
+            <div class="d-flex gap-3 text-muted" style="font-size:0.9rem">
+                <span><i class="bi bi-person me-1"></i>{{ quiz.faculty.username if quiz.faculty else 'Unknown' }}</span>
+                <span><i class="bi bi-list-check me-1"></i>{{ questions|length }} questions</span>
+                <span><i class="bi bi-clock me-1"></i>{{ quiz.created_at.strftime('%b %d, %Y') if quiz.created_at else '' }}</span>
+            </div>
+        </div>
+        {% for q in questions %}
+        <div class="glass-card question-block mb-3 fade-in-up">
+            <span class="question-number">{{ loop.index }}</span>
+            <strong>{{ q.text }}</strong>
+            {% if q.question_type == 'mcq' %}
+            <div class="mt-2">
+                {% for opt in [q.option_a, q.option_b, q.option_c, q.option_d] %}
+                    {% if opt %}<div class="mcq-option" style="cursor:default"><span>{{ opt }}</span></div>{% endif %}
+                {% endfor %}
+            </div>
+            {% endif %}
+        </div>
+        {% endfor %}
+    </div>
 </div>
-
-<span class="badge bg-primary">
-Quiz
-</span>
-
-</div>
-
-</div>
-
-
-<!-- QUESTIONS FORM -->
-
-<form method="POST">
-
-{% if questions %}
-
-{% for q in questions %}
-
-<div class="card shadow-sm mb-3 question-card">
-
-<div class="card-body">
-
-<h5 class="mb-3 fw-semibold">
-Q{{ loop.index }}. {{ q.text }}
-</h5>
-
-<textarea 
-name="question_{{ q.id }}"
-class="form-control"
-rows="4"
-placeholder="Write your answer here..."
-required></textarea>
-
-</div>
-
-</div>
-
-{% endfor %}
-
-<!-- SUBMIT BUTTON -->
-
-<div class="text-end mt-4">
-
-<button class="btn btn-primary btn-lg px-4">
-Submit Answers
-</button>
-
-</div>
-
-{% else %}
-
-<!-- EMPTY STATE -->
-
-<div class="text-center p-5 border rounded bg-light">
-
-<h5 class="text-muted">No questions available</h5>
-
-<p class="text-muted">
-This quiz does not have any questions yet.
-</p>
-
-</div>
-
-{% endif %}
-
-</form>
-
-</div>
-
 {% endblock %}

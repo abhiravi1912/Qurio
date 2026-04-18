@@ -1,78 +1,52 @@
 {% extends "layout.html" %}
-
+{% block title %}{{ quiz.title }} — QURIO{% endblock %}
 {% block content %}
+<div class="row justify-content-center mt-3">
+    <div class="col-lg-8">
+        <div class="glass-card p-4 mb-4 fade-in-up">
+            <h3 class="fw-bold">{{ quiz.title }}</h3>
+            {% if quiz.description %}<p class="text-muted">{{ quiz.description }}</p>{% endif %}
+            <div class="d-flex gap-3 text-muted" style="font-size:0.9rem">
+                <span><i class="bi bi-person me-1"></i>{{ quiz.faculty.username if quiz.faculty else 'Unknown' }}</span>
+                <span><i class="bi bi-list-check me-1"></i>{{ questions|length }} questions</span>
+            </div>
+        </div>
 
-<div class="container mt-4">
-
-<!-- QUIZ HEADER -->
-
-<div class="card shadow-sm p-4 mb-4">
-
-<h2 class="mb-2">{{ quiz.title }}</h2>
-
-<p class="text-muted mb-0">
-Total Questions: {{ questions|length }}
-</p>
-
+        {% if existing and current_user.role|lower == 'student' %}
+        <div class="alert-glass warning">
+            <i class="bi bi-exclamation-triangle-fill" style="color:var(--warning)"></i>
+            You have already submitted this quiz. <a href="{{ url_for('main.my_results') }}">View results</a>
+        </div>
+        {% else %}
+        <form method="POST">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            {% for q in questions %}
+            <div class="glass-card question-block mb-3 fade-in-up">
+                <div class="mb-2">
+                    <span class="question-number">{{ loop.index }}</span>
+                    <strong>{{ q.text }}</strong>
+                </div>
+                {% if q.question_type == 'mcq' %}
+                    {% for opt_val, opt_label in [('a', q.option_a), ('b', q.option_b), ('c', q.option_c), ('d', q.option_d)] %}
+                        {% if opt_label %}
+                        <label class="mcq-option">
+                            <input type="radio" name="question_{{ q.id }}" value="{{ opt_label }}" required>
+                            <span>{{ opt_label }}</span>
+                        </label>
+                        {% endif %}
+                    {% endfor %}
+                {% else %}
+                <textarea name="question_{{ q.id }}" class="form-control" rows="3" placeholder="Type your answer..." required></textarea>
+                {% endif %}
+            </div>
+            {% endfor %}
+            {% if current_user.role|lower == 'student' %}
+            <button type="submit" class="btn btn-gradient w-100 py-2 mt-2">
+                <i class="bi bi-send-fill me-1"></i> Submit Quiz
+            </button>
+            {% endif %}
+        </form>
+        {% endif %}
+    </div>
 </div>
-
-
-<!-- QUESTIONS FORM -->
-
-<form method="POST">
-
-{% if questions %}
-
-{% for q in questions %}
-
-<div class="card shadow-sm mb-3">
-
-<div class="card-body">
-
-<h5 class="mb-3">
-{{ loop.index }}. {{ q.text }}
-</h5>
-
-<textarea name="question_{{ q.id }}"
-class="form-control"
-rows="3"
-placeholder="Write your answer here..."
-required></textarea>
-
-</div>
-
-</div>
-
-{% endfor %}
-
-<!-- SUBMIT BUTTON -->
-
-<div class="d-grid mt-4">
-
-<button class="btn btn-primary btn-lg">
-Submit All Answers
-</button>
-
-</div>
-
-{% else %}
-
-<!-- EMPTY STATE -->
-
-<div class="text-center p-5 border rounded bg-light">
-
-<h5 class="text-muted">No questions available</h5>
-
-<p class="text-muted">
-This quiz does not have any questions yet.
-</p>
-
-</div>
-
-{% endif %}
-
-</form>
-
-</div>
-
 {% endblock %}

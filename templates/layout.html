@@ -1,148 +1,187 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% block title %}QURIO{% endblock %}</title>
+    <meta name="description" content="Qurio — Academic doubt resolution platform for students and faculty">
 
-<title>QURIO</title>
-
-<meta name="viewport" content="width=device-width, initial-scale=1">
-
-<!-- Bootstrap -->
-<link rel="stylesheet"
-href="{{ url_for('static', filename='bootstrap.min.css') }}">
-
-<!-- Custom CSS -->
-<link rel="stylesheet"
-href="{{ url_for('static', filename='style.css') }}">
-
+    <link href="{{ url_for('static', filename='vendor/css/inter.css') }}" rel="stylesheet">
+    <link href="{{ url_for('static', filename='vendor/css/bootstrap.min.css') }}" rel="stylesheet">
+    <link href="{{ url_for('static', filename='vendor/css/bootstrap-icons.css') }}" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 
-<body class="bg-light">
+<body>
 
-<!-- NAVBAR -->
+<nav class="navbar navbar-expand-lg sticky-top">
+    <div class="container">
+        <a class="navbar-brand" href="{{ url_for('main.home') }}">
+            <i class="bi bi-rocket-takeoff-fill me-1"></i> QURIO
+        </a>
 
-<nav class="navbar navbar-expand-lg navbar-dark shadow-sm sticky-top custom-navbar">
+        <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <i class="bi bi-list text-white fs-4"></i>
+        </button>
 
-<div class="container">
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto align-items-center gap-1">
 
-<!-- BRAND -->
-<a class="navbar-brand fw-bold fs-4" href="{{ url_for('main.home') }}">
-🚀 QURIO
-</a>
+                <li class="nav-item">
+                    <a class="nav-link {% if request.endpoint == 'main.home' %}active-link{% endif %}"
+                       href="{{ url_for('main.home') }}">
+                        <i class="bi bi-house-fill me-1"></i>Home
+                    </a>
+                </li>
 
-<!-- TOGGLE -->
-<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-<span class="navbar-toggler-icon"></span>
-</button>
+                {% if current_user.is_authenticated %}
+                <li class="nav-item">
+                    <a class="nav-link {% if request.endpoint == 'main.dashboard' %}active-link{% endif %}"
+                       href="{{ url_for('main.dashboard') }}">
+                        <i class="bi bi-grid-1x2-fill me-1"></i>Dashboard
+                    </a>
+                </li>
+                {% endif %}
 
-<div class="collapse navbar-collapse" id="navbarNav">
+                <li class="nav-item">
+                    <a class="nav-link {% if request.endpoint == 'main.notes' %}active-link{% endif %}"
+                       href="{{ url_for('main.notes') }}">
+                        <i class="bi bi-journal-text me-1"></i>Notes
+                    </a>
+                </li>
 
-<ul class="navbar-nav ms-auto align-items-center">
+                <li class="nav-item">
+                    <a class="nav-link {% if request.endpoint == 'main.view_quizzes' %}active-link{% endif %}"
+                       href="{{ url_for('main.view_quizzes') }}">
+                        <i class="bi bi-lightning-fill me-1"></i>Quizzes
+                    </a>
+                </li>
 
-<li class="nav-item">
-<a class="nav-link {% if request.endpoint == 'main.home' %}active-link{% endif %}"
-href="{{ url_for('main.home') }}">Home</a>
-</li>
+                <li class="nav-item">
+                    <a class="nav-link {% if request.endpoint == 'main.leaderboard' %}active-link{% endif %}"
+                       href="{{ url_for('main.leaderboard') }}">
+                        <i class="bi bi-trophy-fill me-1"></i>Leaderboard
+                    </a>
+                </li>
 
-<li class="nav-item">
-<a class="nav-link {% if request.endpoint == 'main.post_doubt' %}active-link{% endif %}"
-href="{{ url_for('main.post_doubt') }}">Doubt</a>
-</li>
+                {% if current_user.is_authenticated and current_user.role == 'student' %}
+                <li class="nav-item">
+                    <a class="nav-link {% if request.endpoint == 'main.my_results' %}active-link{% endif %}"
+                       href="{{ url_for('main.my_results') }}">
+                        <i class="bi bi-bar-chart-fill me-1"></i>Results
+                    </a>
+                </li>
+                {% endif %}
 
-<li class="nav-item">
-<a class="nav-link {% if request.endpoint == 'main.notes' %}active-link{% endif %}"
-href="{{ url_for('main.notes') }}">Notes</a>
-</li>
+                {% if current_user.is_authenticated and current_user.role == 'faculty' %}
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('main.upload_note') }}">
+                        <i class="bi bi-cloud-upload-fill me-1"></i>Upload
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('main.create_quiz') }}">
+                        <i class="bi bi-plus-circle-fill me-1"></i>Create Quiz
+                    </a>
+                </li>
+                {% endif %}
 
-<li class="nav-item">
-<a class="nav-link {% if request.endpoint == 'main.view_quizzes' %}active-link{% endif %}"
-href="{{ url_for('main.view_quizzes') }}">Quizzes</a>
-</li>
+                {% if current_user.is_authenticated and current_user.is_admin %}
+                <li class="nav-item">
+                    <a class="nav-link {% if request.endpoint == 'main.admin_panel' %}active-link{% endif %}"
+                       href="{{ url_for('main.admin_panel') }}">
+                        <i class="bi bi-shield-lock-fill me-1"></i>Admin
+                    </a>
+                </li>
+                {% endif %}
 
-{% if current_user.is_authenticated and current_user.role == "student" %}
+                {% if current_user.is_authenticated %}
+                <li class="nav-item ms-2">
+                    <a href="{{ url_for('main.profile', username=current_user.username) }}" class="text-decoration-none">
+                        <span class="user-badge">
+                            <span class="avatar" style="width:26px;height:26px;font-size:0.7rem;background:{{ current_user.avatar_color }}">
+                                {{ current_user.username[0]|upper }}
+                            </span>
+                            {{ current_user.username }}
+                            <span class="points-badge"><i class="bi bi-star-fill" style="font-size:0.65rem"></i> {{ current_user.points }}</span>
+                        </span>
+                    </a>
+                </li>
+                <li class="nav-item ms-2">
+                    <a class="btn btn-glass btn-sm" href="{{ url_for('main.logout') }}">
+                        <i class="bi bi-box-arrow-right me-1"></i>Logout
+                    </a>
+                </li>
+                {% else %}
+                <li class="nav-item ms-2">
+                    <a class="btn btn-glass btn-sm" href="{{ url_for('main.login') }}">
+                        <i class="bi bi-box-arrow-in-right me-1"></i>Login
+                    </a>
+                </li>
+                <li class="nav-item ms-1">
+                    <a class="btn btn-gradient btn-sm" href="{{ url_for('main.register') }}">
+                        Get Started
+                    </a>
+                </li>
+                {% endif %}
 
-<li class="nav-item">
-<a class="nav-link {% if request.endpoint == 'main.my_results' %}active-link{% endif %}"
-href="{{ url_for('main.my_results') }}">
-My Results
-</a>
-</li>
-
-{% endif %}
-
-{% if current_user.is_authenticated and current_user.role == "faculty" %}
-
-<li class="nav-item">
-<a class="nav-link"
-href="{{ url_for('main.upload_note') }}">Upload</a>
-</li>
-
-<li class="nav-item">
-<a class="nav-link"
-href="{{ url_for('main.create_quiz') }}">Create</a>
-</li>
-
-{% endif %}
-
-{% if current_user.is_authenticated %}
-
-<li class="nav-item ms-3">
-<span class="user-badge">
-{{ current_user.username }}
-</span>
-</li>
-
-<li class="nav-item ms-2">
-<a class="btn btn-outline-light btn-sm"
-href="{{ url_for('main.logout') }}">
-Logout
-</a>
-</li>
-
-{% else %}
-
-<li class="nav-item ms-2">
-<a class="btn btn-outline-light btn-sm"
-href="{{ url_for('main.login') }}">
-Login
-</a>
-</li>
-
-<li class="nav-item ms-2">
-<a class="btn btn-light btn-sm text-primary fw-semibold"
-href="{{ url_for('main.register') }}">
-Register
-</a>
-</li>
-
-{% endif %}
-
-</ul>
-
-</div>
-
-</div>
-
+            </ul>
+        </div>
+    </div>
 </nav>
 
-<!-- CONTENT -->
-
 <div class="container mt-4 main-container">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+            <div class="alert-glass {{ category }}" role="alert">
+                {% if category == 'success' %}<i class="bi bi-check-circle-fill" style="color:var(--success)"></i>
+                {% elif category == 'danger' %}<i class="bi bi-x-circle-fill" style="color:var(--danger)"></i>
+                {% elif category == 'warning' %}<i class="bi bi-exclamation-triangle-fill" style="color:var(--warning)"></i>
+                {% else %}<i class="bi bi-info-circle-fill" style="color:var(--info)"></i>{% endif %}
+                {{ message }}
+            </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
 
-{% block content %}
-{% endblock %}
-
+    {% block content %}{% endblock %}
 </div>
 
-<!-- FOOTER -->
-
-<footer class="text-center mt-5 mb-3 text-muted small">
-© 2026 QURIO • Built for learning
+<footer class="footer">
+    <div class="container">
+        <i class="bi bi-rocket-takeoff-fill me-1"></i> QURIO &copy; 2026 &bull; Built for learning, powered by curiosity
+    </div>
 </footer>
 
-<!-- Bootstrap JS (IMPORTANT for mobile toggle) -->
-<script src="{{ url_for('static', filename='bootstrap.bundle.min.js') }}"></script>
+<script src="{{ url_for('static', filename='vendor/js/bootstrap.bundle.min.js') }}"></script>
+<script>
+    // Navbar Scroll Effect
+    window.addEventListener('scroll', function() {
+        const nav = document.querySelector('.navbar');
+        if (window.scrollY > 50) {
+            nav.classList.add('scrolled');
+        } else {
+            nav.classList.remove('scrolled');
+        }
+    });
 
+    // Add staggered entrance to list items
+    document.addEventListener('DOMContentLoaded', () => {
+        const items = document.querySelectorAll('.glass-card, .leaderboard-row, .doubt-card');
+        items.forEach((item, index) => {
+            item.style.opacity = '0';
+            item.style.transform = 'translateY(20px)';
+            item.style.transition = 'all 0.5s cubic-bezier(0.4, 0, 0.2, 1)';
+            item.style.transitionDelay = `${index * 0.05}s`;
+            
+            setTimeout(() => {
+                item.style.opacity = '1';
+                item.style.transform = 'translateY(0)';
+            }, 100);
+        });
+    });
+</script>
+{% block scripts %}{% endblock %}
 </body>
-
 </html>

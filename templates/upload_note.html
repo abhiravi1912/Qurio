@@ -1,61 +1,30 @@
 {% extends "layout.html" %}
-
+{% block title %}Upload Note — QURIO{% endblock %}
 {% block content %}
-
-<div class="container mt-5">
-
-<div class="row justify-content-center">
-
-<div class="col-md-7">
-
-<div class="card shadow-lg p-4">
-
-<h3 class="text-center mb-4">Upload Notes</h3>
-
-<form method="POST" enctype="multipart/form-data">
-
-{{ form.hidden_tag() }}
-
-<!-- Title -->
-
-<div class="mb-3">
-<label class="form-label">{{ form.title.label }}</label>
-{{ form.title(class="form-control", placeholder="Enter note title") }}
+<div class="row justify-content-center mt-4">
+    <div class="col-md-7 col-lg-5">
+        <div class="glass-card p-4 fade-in-up">
+            <h3 class="section-title mb-4"><i class="bi bi-cloud-upload-fill me-2" style="color:var(--accent-1)"></i>Upload Note</h3>
+            <form method="POST" enctype="multipart/form-data">
+                {{ form.hidden_tag() }}
+                <div class="mb-3">
+                    <label class="form-label">{{ form.title.label.text }}</label>
+                    {{ form.title(class="form-control", placeholder="Note title") }}
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">{{ form.content.label.text }}</label>
+                    {{ form.content(class="form-control", rows=6, placeholder="Note content or description...") }}
+                </div>
+                <div class="mb-4">
+                    <label class="form-label">{{ form.file.label.text }}</label>
+                    {{ form.file(class="form-control") }}
+                    <small class="text-muted">PDF, PNG, JPG, MP4, DOC, PPT — Max 16MB</small>
+                </div>
+                <button type="submit" class="btn btn-gradient w-100 py-2">
+                    <i class="bi bi-cloud-upload me-1"></i> Upload
+                </button>
+            </form>
+        </div>
+    </div>
 </div>
-
-<!-- Content -->
-
-<div class="mb-3">
-<label class="form-label">{{ form.content.label }}</label>
-{{ form.content(class="form-control", rows="5",
-placeholder="Write explanation or notes here...") }}
-</div>
-
-<!-- File Upload -->
-
-<div class="mb-3">
-<label class="form-label">{{ form.file.label }}</label>
-{{ form.file(class="form-control") }}
-
-<small class="text-muted">
-Upload PDF or image notes (optional)
-</small>
-</div>
-
-<!-- Submit Button -->
-
-<div class="d-grid">
-{{ form.submit(class="btn btn-primary btn-lg") }}
-</div>
-
-</form>
-
-</div>
-
-</div>
-
-</div>
-
-</div>
-
 {% endblock %}
